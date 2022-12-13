@@ -1,55 +1,44 @@
-package desperado;
+
 
 import java.awt.image.*;
 import java.io.*;
 import javax.imageio.*;
+import java.util.ArrayList;
 
 public class SpriteSheet {
 	
+	private final int TILE_SIZE = 16;
+	private ArrayList<BufferedImage> Sprites = new ArrayList<BufferedImage>();
+	private int rightCount = 0;
 	
-	private static BufferedImage spriteSheet;
-	private static final int TILE_SIZE = 16;
-	private static BufferedImage right[];
-	private static int rightCount = 0;
-	
-	public static BufferedImage loadSprite(String file) {
-		BufferedImage sprite = null;
+	public void loadImages(String file) {
+		
+		BufferedImage sheet = null;
 		
 		try {
-			sprite = ImageIO.read(new File(file));
+			sheet = ImageIO.read(new File(file));
 		}catch(IOException e) {
 			e.printStackTrace();
 		}
 		
+		for (int i = 0; i < sheet.getWidth(); i += TILE_SIZE) {
+			Sprites.add(sheet.getSubimage(i, 0, TILE_SIZE, TILE_SIZE));
+		}
 		
-		
-		return sprite;
 	}
-	
-	public static BufferedImage nextRightSprite() {
+		
+	public BufferedImage nextSprite() {
+		
 		rightCount++;
-		if (rightCount > right.length) {
+		
+		if (rightCount >= Sprites.size()) {
 			rightCount = 0;
 		}
 		
-		if (spriteSheet == null) {
-			spriteSheet = loadSprite("knight_idle_spritesheet.png");
-		}
-		
-		return spriteSheet.getSubimage(TILE_SIZE, TILE_SIZE, TILE_SIZE, TILE_SIZE);
+		return Sprites.get(rightCount);
 	}	
 	
-	/*
-	private BufferedImage image;
 	
-	public SpriteSheet(BufferedImage ss) {
-		this.image = ss;
-	}
-	 
-	public BufferedImage grabImage(int col, int row, int width, int height) {
-		BufferedImage img = image.getSubimage((col * 32) - 32, (row * 32)- 32, width, height);
-		return img;
-	}
-	*/
+	
 	
 }
