@@ -23,15 +23,16 @@ public class MyMain extends JPanel implements KeyListener, ActionListener{
 
 	private Timer timer;
 	private Player player;
-	private Image background;
-	private boolean collide;
-
+	private Image rock;
+	private int[][] map = {{0, 0, 0, 1, 0, 0, 0, 0},{0, 0, 0, 0, 0, 0, 0, 0}};
+	private int x = 100, y = 100;
+	
 	public MyMain() throws InterruptedException {
 		
 		this.setFocusable(true);
 		this.requestFocusInWindow();
 		
-		player = new Player(0,0,30,30);
+		player = new Player(0,0,10,10);
 		this.addKeyListener(this);
 		timer = new Timer(80,this);
 		timer.start();
@@ -43,7 +44,8 @@ public class MyMain extends JPanel implements KeyListener, ActionListener{
 			e.printStackTrace();
 		}
 		
-		background = image.getScaledInstance(100, 100, Image.SCALE_DEFAULT);
+		rock = image.getScaledInstance(100, 100, Image.SCALE_DEFAULT);
+		player.setStay();
 		
 		
 	
@@ -55,10 +57,12 @@ public class MyMain extends JPanel implements KeyListener, ActionListener{
 	
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		g.drawImage(background, 100, 100, this);
+	
+		
 		player.myDraw(g);
 		this.setFocusable(true);
 		this.requestFocusInWindow();
+
 		
 	
 
