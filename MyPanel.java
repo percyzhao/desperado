@@ -1,5 +1,3 @@
-package desperado;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
@@ -57,6 +55,7 @@ public class MyPanel extends JPanel implements ActionListener, MouseListener{
 	
 		if(e.getSource() == start) {
 			Main.cards.next(Main.c);
+			this.setFocusable(false);
 		}
 		
 	}
@@ -73,7 +72,7 @@ public class MyPanel extends JPanel implements ActionListener, MouseListener{
 	
 		} 
        
-		image = bufferedImage.getScaledInstance(700, 600, Image.SCALE_DEFAULT);
+		image = bufferedImage.getScaledInstance(getWidth(), getHeight(), Image.SCALE_DEFAULT);
 		
 		g.drawImage(image, 0, 0, this);
 		
