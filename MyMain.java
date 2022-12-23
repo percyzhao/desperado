@@ -32,7 +32,7 @@ public class MyMain extends JPanel implements KeyListener, ActionListener{
 		this.setFocusable(true);
 		this.requestFocusInWindow();
 		
-		player = new Player(0,0,10,10);
+		player = new Player(0,0,20,20);
 		slime = new Slime(300,300,10,10);
 		
 		this.addKeyListener(this);
@@ -146,37 +146,37 @@ public class MyMain extends JPanel implements KeyListener, ActionListener{
 		
 		if(player.isCollide(slime).equals("left")) {
 			if(!player.isCollide().equals("inside"))
-				player.setX(player.getX() - 30);
+				player.setX(player.getX() - 50);
 			player.dmg();
 		
 		}
 		else if(player.isCollide(slime).equals("right")) {
 			if(!player.isCollide().equals("inside"))
-				player.setX(player.getX() + 30);
+				player.setX(player.getX() + 50);
 			player.dmg();
 		
 		}
 		else if(player.isCollide(slime).equals("above")) {
 			if(!player.isCollide().equals("inside"))
-				player.setY(player.getY() - 30);
+				player.setY(player.getY() - 50);
 			player.dmg();
 	
 		}
 		else if(player.isCollide(slime).equals("below")) {
 			if(!player.isCollide().equals("inside"))
-				player.setY(player.getY() + 30);
+				player.setY(player.getY() + 50);
 			player.dmg();
 		
 		}
 		else if(player.isCollide(slime).equals("inside")) {
 			if(slime.getUp())
-				player.setY(slime.getY() - 30);
+				player.setY(slime.getY() - 50);
 			else if(slime.getDown())
-				player.setY(slime.getY() + 30);
+				player.setY(slime.getY() + 50);
 			else if(slime.getRight())
-				player.setY(slime.getX() + 30);
+				player.setY(slime.getX() + 50);
 			else if(slime.getLeft())
-				player.setY(slime.getX() - 30);
+				player.setY(slime.getX() - 50);
 			player.dmg();
 		
 		}

@@ -1,6 +1,8 @@
 
 
+import java.awt.AlphaComposite;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -33,6 +35,8 @@ public class Entity{
 	private SpriteSheet heartSheet;
 	private BufferedImage heart;
 	private int hp = 4;
+	private boolean takenDmg;
+	private int count = 0;
 	
 	
 	
@@ -60,9 +64,12 @@ public class Entity{
 					count++;
 			}
 		}
+		/*
 		for(int i = 0; i <= 400; i += 100) {
 			obstacles.add(new Rectangle(200 - this.xVelocity,i - this.yVelocity , 100, 100));
 		}
+		*/
+		 
 		
 		
 		heart = heartSheet.nextSprite();
@@ -90,31 +97,38 @@ public class Entity{
 		for(int i = 0; i < obstacles.size(); i ++) {
 			if(player.intersects(obstacles.get(i))) {
 				
-				if(right && x +60+ xVelocity < obstacles.get(i).getX() && y + yVelocity > obstacles.get(i).getY() - 70 && y + yVelocity  + 100 < obstacles.get(i).getY() + 190) {
-					System.out.println("left");
-						return "left";
-			
-					}
-					else if(left && x + xVelocity + 60 > obstacles.get(i).getX()  + 100 && y + yVelocity > obstacles.get(i).getY() - 70 && y + yVelocity < obstacles.get(i).getY() + 90) {
-						System.out.println("right");
-						return "right";
-					}
-						
-					else if(up && y + yVelocity + 60 > obstacles.get(i).getY()  + 100 && x + xVelocity > obstacles.get(i).getX() - 70 && x + xVelocity < obstacles.get(i).getX() + 90) {
-						System.out.println("below");
-						return "below";
-					}
-		
-					else if(down && y + yVelocity + 60 < obstacles.get(i).getY()  && x + xVelocity > obstacles.get(i).getX() - 70 && x + xVelocity + 100 < obstacles.get(i).getX() + 190) {
-						System.out.println("above");
-						return "above";
-					}
+				if (right && x + 60 + xVelocity < obstacles.get(i).getX()
+						&& y + yVelocity > obstacles.get(i).getY() - 70
+						&& y + yVelocity + 100 < obstacles.get(i).getY() + 190) {
+					//System.out.println("left");
+					return "left";
+
+				} else if (left && x + xVelocity + 60 > obstacles.get(i).getX() + 100
+						&& y + yVelocity > obstacles.get(i).getY() - 70
+						&& y + yVelocity < obstacles.get(i).getY() + 90) {
+					//System.out.println("right");
+					return "right";
+				}
+
+				else if (up && y + yVelocity + 60 > obstacles.get(i).getY() + 100
+						&& x + xVelocity > obstacles.get(i).getX() - 70
+						&& x + xVelocity < obstacles.get(i).getX() + 90) {
+					//System.out.println("below");
+					return "below";
+				}
+
+				else if (down && y + yVelocity + 60 < obstacles.get(i).getY()
+						&& x + xVelocity > obstacles.get(i).getX() - 70
+						&& x + xVelocity + 100 < obstacles.get(i).getX() + 190) {
+					//System.out.println("above");
+					return "above";
+				}
 						
 				
 				
 				}
 		}
-		System.out.println("nothing");
+		//System.out.println("nothing");
 		return "not";
 	}
 	
@@ -122,32 +136,34 @@ public class Entity{
 		Rectangle player = new Rectangle(x + xVelocity, y + yVelocity, 80, 80);
 		Rectangle slime = new Rectangle(other.getX() - this.xVelocity,other.getY() - this.yVelocity , 100, 100);
 		Rectangle real = new Rectangle(other.getX(), other.getY(), 80, 80);
-		if(player.intersects(slime)) {
-			
-			if(x +60+ xVelocity < other.getX() - xVelocity && y + yVelocity > other.getY() - yVelocity - 70 && y + yVelocity  + 100 < other.getY() - yVelocity + 190) {
-				//System.out.println("left");
-				return "left";
+		if(!takenDmg) {
+			if(player.intersects(slime)) {
+				
+				if(x +60+ xVelocity < other.getX() - xVelocity && y + yVelocity > other.getY() - yVelocity - 70 && y + yVelocity  + 100 < other.getY() - yVelocity + 190) {
+					//System.out.println("left");
+					return "left";
+		
+				}
+				else if(x + xVelocity + 60 > other.getX() - xVelocity + 100 && y + yVelocity > other.getY() - yVelocity - 70 && y + yVelocity < other.getY() - yVelocity + 90) {
+					//System.out.println("right");
+					return "right";
+				}
+					
+				else if(y + yVelocity + 60 > other.getY() - yVelocity + 100 && x + xVelocity > other.getX() - xVelocity - 70 && x + xVelocity < other.getX() - xVelocity + 90) {
+					//System.out.println("below");
+					return "below";
+				}
 	
-			}
-			else if(x + xVelocity + 60 > other.getX() - xVelocity + 100 && y + yVelocity > other.getY() - yVelocity - 70 && y + yVelocity < other.getY() - yVelocity + 90) {
-				//System.out.println("right");
-				return "right";
-			}
+				else if(y + yVelocity + 60 < other.getY() - yVelocity && x + xVelocity > other.getX() - xVelocity - 70 && x + xVelocity + 100 < other.getX() - xVelocity + 190) {
+					//System.out.println("above");
+					return "above";
+				}
 				
-			else if(y + yVelocity + 60 > other.getY() - yVelocity + 100 && x + xVelocity > other.getX() - xVelocity - 70 && x + xVelocity < other.getX() - xVelocity + 90) {
-				//System.out.println("below");
-				return "below";
-			}
-
-			else if(y + yVelocity + 60 < other.getY() - yVelocity && x + xVelocity > other.getX() - xVelocity - 70 && x + xVelocity + 100 < other.getX() - xVelocity + 190) {
-				//System.out.println("above");
-				return "above";
-			}
+				
+					
 			
 			
-				
-		
-		
+			}
 		}
 	
 		return "not";
@@ -243,13 +259,22 @@ public class Entity{
 		
 	}
 	public void dmg() {
-		dmg = true;
+		if(takenDmg)
+			dmg = false;
+		else {
+			dmg = true;
+			count = 0;
+			takenDmg = true;
+		}
+		
 	}
+	
 	public int getHp() {
 		return hp;
 	}
 	public void myDraw(Graphics g) {
 		//Idle
+		
 		if (stay) {
 			entityImg = idleSheet.nextSprite();
 			
@@ -258,11 +283,11 @@ public class Entity{
 
 		else
 			entityImg = rightSheet.nextSprite();
-		
+		/*
 		for(int i =0; i <401; i+= 80) {
-			g.drawImage(rock, 200, i,	 null);
+			g.drawImage(rock, 200, i,  null);
 		}
-		
+		*/
 
 		
 		if(dmg && hp != 0) {
@@ -275,15 +300,33 @@ public class Entity{
 		
 		
 		
+		Image scaledImage = entityImg.getScaledInstance(100, 100, Image.SCALE_DEFAULT);
 		
-		Image scaledImage = entityImg.getScaledInstance(size_y, size_x, Image.SCALE_DEFAULT);
 		
+		if(takenDmg) {
+			if(count % 2==0)
+				((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) 0.5));
+			else
+				((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) 0.3));
+		}
+		else
+			((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) 1));
+		
+		
+		g.drawImage(scaledImage, x, y, 100, 100, null);
+
 		Image Image2 = heart.getScaledInstance(100, 100, Image.SCALE_DEFAULT);
-		
-		g.drawImage(scaledImage, this.x, this.y, null);
+		((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) 1));
 		g.drawImage(Image2, 300, 0, null);
-	}
 	
+		count++;
+		if (count == 20 && takenDmg) {
+			takenDmg = false;
+		}
+	
+
+		
+	}
 	
 	
 }

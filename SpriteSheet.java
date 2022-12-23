@@ -38,7 +38,6 @@ public class SpriteSheet {
 		if (rightCount >= Sprites.size()) {
 			rightCount = 0;
 		}
-		
 		return Sprites.get(rightCount);
 	}	
 	
