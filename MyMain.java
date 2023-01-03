@@ -12,7 +12,7 @@ import javax.swing.Timer;
 
 
 @SuppressWarnings("serial")
-public class MyMain extends JPanel implements KeyListener, ActionListener{
+public class MyMain extends JPanel implements KeyListener, ActionListener, MouseListener{
 	
 	/*
 	 * Load Images onto screen
@@ -26,22 +26,24 @@ public class MyMain extends JPanel implements KeyListener, ActionListener{
 	private Slime slime;
 	private int count = 0;
 	private boolean right = false, left = false, up = false, down = false;
+	
+
 
 	public MyMain() throws InterruptedException {
 		
 		this.setFocusable(true);
 		this.requestFocusInWindow();
 		
-		player = new Player(0,0,20,20);
+		player = new Player(0,0,10,10);
 		slime = new Slime(300,300,10,10);
-		
+			
 		this.addKeyListener(this);
 		timer = new Timer(80,this);
 		timer.start();
 		
 		player.setStay();
 		
-		
+		this.addMouseListener(this);
 	
 
 		
@@ -145,30 +147,23 @@ public class MyMain extends JPanel implements KeyListener, ActionListener{
 		
 		
 		if(player.isCollide(slime).equals("left")) {
-			if(!player.isCollide().equals("inside"))
-				player.setX(player.getX() - 50);
 			player.dmg();
 		
 		}
 		else if(player.isCollide(slime).equals("right")) {
-			if(!player.isCollide().equals("inside"))
-				player.setX(player.getX() + 50);
 			player.dmg();
 		
 		}
 		else if(player.isCollide(slime).equals("above")) {
-			if(!player.isCollide().equals("inside"))
-				player.setY(player.getY() - 50);
 			player.dmg();
 	
 		}
 		else if(player.isCollide(slime).equals("below")) {
-			if(!player.isCollide().equals("inside"))
-				player.setY(player.getY() + 50);
 			player.dmg();
 		
 		}
 		else if(player.isCollide(slime).equals("inside")) {
+			/*
 			if(slime.getUp())
 				player.setY(slime.getY() - 50);
 			else if(slime.getDown())
@@ -177,6 +172,7 @@ public class MyMain extends JPanel implements KeyListener, ActionListener{
 				player.setY(slime.getX() + 50);
 			else if(slime.getLeft())
 				player.setY(slime.getX() - 50);
+			*/
 			player.dmg();
 		
 		}
@@ -189,6 +185,42 @@ public class MyMain extends JPanel implements KeyListener, ActionListener{
 		player.move();
 		repaint();
 		
+	}
+
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		player.attack();
+		System.out.println("clicked");
+	}
+
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

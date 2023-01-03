@@ -1,10 +1,11 @@
 
-
 import java.awt.AlphaComposite;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +29,7 @@ public class Entity{
 	private boolean dmg;
 	private int[][] map = {{0, 0, 0, 1, 0, 0, 0, 0},{0, 0, 0, 0, 0, 0, 0, 0}};
 
-	private Image rock;
+	private Image rock, sword;
 	private boolean right, left, up, down, stay;
 	private ArrayList<Rectangle> obstacles = new ArrayList<Rectangle>();
 	private static final String HEART_ANIM_PATH = "heart_animated_2.png";
@@ -36,7 +37,10 @@ public class Entity{
 	private BufferedImage heart;
 	private int hp = 4;
 	private boolean takenDmg;
-	private int count = 0;
+	private int count = 0, count2 = 0;
+	private boolean attack;
+	private boolean alive = true;
+
 	
 	
 	
@@ -64,11 +68,12 @@ public class Entity{
 					count++;
 			}
 		}
-		/*
+		
 		for(int i = 0; i <= 400; i += 100) {
-			obstacles.add(new Rectangle(200 - this.xVelocity,i - this.yVelocity , 100, 100));
+			if(i != 100 && i != 200)
+				obstacles.add(new Rectangle(200 - this.xVelocity,i - this.yVelocity , 100, 100));
 		}
-		*/
+		
 		 
 		
 		
@@ -82,6 +87,22 @@ public class Entity{
 		}
 		
 		rock = image.getScaledInstance(80, 80, Image.SCALE_DEFAULT);
+		
+		BufferedImage image2 = null;
+		
+		try {
+			image2 = ImageIO.read(new File("weapon_sword_1.png"));
+		}catch(IOException e) {
+			e.printStackTrace();
+		}
+		
+		sword = image2.getScaledInstance(200, 200, Image.SCALE_DEFAULT);
+		
+		
+
+		
+		
+		
 		
 	}
 		
@@ -157,6 +178,9 @@ public class Entity{
 				else if(y + yVelocity + 60 < other.getY() - yVelocity && x + xVelocity > other.getX() - xVelocity - 70 && x + xVelocity + 100 < other.getX() - xVelocity + 190) {
 					//System.out.println("above");
 					return "above";
+				}
+				else {
+					return "inside";
 				}
 				
 				
@@ -242,6 +266,10 @@ public class Entity{
 	public boolean getLeft() {
 		return left;
 	}
+	public void attack() {
+		attack = true;
+		count2 = 0;
+	}
 	public void move() {
 		
 		
@@ -283,11 +311,12 @@ public class Entity{
 
 		else
 			entityImg = rightSheet.nextSprite();
-		/*
+		
 		for(int i =0; i <401; i+= 80) {
-			g.drawImage(rock, 200, i,  null);
+			if(i != 80 && i != 160 && i != 240)
+				g.drawImage(rock, 200, i,  null);
 		}
-		*/
+		
 
 		
 		if(dmg && hp != 0) {
@@ -312,14 +341,37 @@ public class Entity{
 		else
 			((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) 1));
 		
-		
-		g.drawImage(scaledImage, x, y, 100, 100, null);
+		if(alive)
+			g.drawImage(scaledImage, x, y, 100, 100, null);
 
 		Image Image2 = heart.getScaledInstance(100, 100, Image.SCALE_DEFAULT);
 		((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) 1));
 		g.drawImage(Image2, 300, 0, null);
-	
+		
+		
+		
+		
+		
+		if(attack){
+			
+			AffineTransform backup = ((Graphics2D) g).getTransform();
+			AffineTransform a = AffineTransform.getRotateInstance(count2/50.0, 200, 300);
+			((Graphics2D) g).setTransform(a);
+			((Graphics2D) g).drawImage(sword, 300, 300, null);
+			((Graphics2D) g).setTransform(backup);
+			 
+
+			if(count2 == 100)
+				attack = false;
+			
+
+			
+		}
+		
+		
+		
 		count++;
+		count2 += 20;
 		if (count == 20 && takenDmg) {
 			takenDmg = false;
 		}
