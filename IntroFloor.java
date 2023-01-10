@@ -89,10 +89,13 @@ public class IntroFloor extends JPanel implements KeyListener, ActionListener, M
 		
 		player.myDraw(g);
 		player.loadCollisionMap(collision);
+		levelChange();
 	}
 	
 	public void levelChange() {
-		
+		if((player.getY() <= 422 && player.getY() >= 182) && (player.getX() >= 2020 && player.getX() <= 2100)) {
+			Main.cards.next(Main.c);
+		}
 	}
 
 	public void loadMap() {
