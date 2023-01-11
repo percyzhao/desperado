@@ -1,6 +1,5 @@
 package desperado;
 
-
 import java.awt.AlphaComposite;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -8,11 +7,7 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-
-import javax.imageio.ImageIO;
 
 public class Entity{
 
@@ -165,39 +160,31 @@ public class Entity{
 		}
 	
 	public String collideDirection() {
-		Rectangle player = new Rectangle(x + xVelocity, y + yVelocity, 80, 80);
+		Rectangle player = new Rectangle(x - xVelocity, y-yVelocity , sizeX + xVelocity*2, sizeY + yVelocity*2);
 		for(int i = 0; i < obstacles.size(); i ++) {
 			if(player.intersects(obstacles.get(i))) {
 
-				if (right && x + 60 + xVelocity < obstacles.get(i).getX()
-						&& y + yVelocity > obstacles.get(i).getY() - 70
-						&& y + yVelocity + 100 < obstacles.get(i).getY() + 190) {
-					//System.out.println("left");
+				if (right && x + sizeX <= obstacles.get(i).getX() && y > obstacles.get(i).getY() - sizeY && y < obstacles.get(i).getY() + obstacles.get(i).getHeight()) {
+					System.out.println("left");
 					return "left";
-
-				} else if (left && x + xVelocity + 60 > obstacles.get(i).getX() + 100
-						&& y + yVelocity > obstacles.get(i).getY() - 70
-						&& y + yVelocity < obstacles.get(i).getY() + 90) {
-					//System.out.println("right");
+				}
+				else if (left && x >= obstacles.get(i).getX() + obstacles.get(i).getWidth() && y > obstacles.get(i).getY() - sizeY && y < obstacles.get(i).getY() + obstacles.get(i).getHeight()) {
+					System.out.println("right");
 					return "right";
 				}
 
-				else if (up && y + yVelocity + 60 > obstacles.get(i).getY() + 100
-						&& x + xVelocity > obstacles.get(i).getX() - 70
-						&& x + xVelocity < obstacles.get(i).getX() + 90) {
-					//System.out.println("below"); 
+				else if (up && y >= obstacles.get(i).getY() + obstacles.get(i).getHeight() && x > obstacles.get(i).getX() - obstacles.get(i).getWidth() && x < obstacles.get(i).getX() + obstacles.get(i).getWidth()) {
+					System.out.println("below"); 
 					return "below";
 				}
 
-				else if (down && y + yVelocity + 60 < obstacles.get(i).getY()
-						&& x + xVelocity > obstacles.get(i).getX() - 70
-						&& x + xVelocity + 100 < obstacles.get(i).getX() + 190) {
-					//System.out.println("above");
+				else if (down && y + sizeY <= obstacles.get(i).getY() && x > obstacles.get(i).getX() - obstacles.get(i).getWidth() && x < obstacles.get(i).getX() + obstacles.get(i).getWidth()) {
+					System.out.println("above");
 					return "above";
 				}
 			}
 		}
-		//System.out.println("nothing");
+		System.out.println("nothing");
 		return "not";
 	}
 
@@ -279,7 +266,7 @@ public class Entity{
 			entityImg = rightSheet.nextSprite();
 		}
 
-		Image scaledImage = entityImg.getScaledInstance(100, 100, Image.SCALE_DEFAULT);
+		Image scaledImage = entityImg.getScaledInstance(sizeX, sizeY, Image.SCALE_DEFAULT);
 
 		if(takenDmg) {
 			if(count % 2==0)
@@ -292,6 +279,7 @@ public class Entity{
 
 		if(alive) {
 			g.drawImage(scaledImage, x, y, null);
+			g.drawRect(x, y , sizeX, sizeY);
 		}
 
 		if(attack){
@@ -311,6 +299,9 @@ public class Entity{
 		count2 += 20;
 		if (count == 20 && takenDmg) {
 			takenDmg = false;
+		}
+		for(int i = 0; i < obstacles.size(); i++) {
+			g.drawRect((int)obstacles.get(i).getX(), (int)obstacles.get(i).getY(), 64, 64);
 		}
 
 

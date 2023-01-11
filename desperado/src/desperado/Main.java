@@ -27,13 +27,15 @@ public class Main {
 		//MyPanel panel = new MyPanel();
 
 		//Panel 2, MyMain(), is currently a knight testing screen.
-		//MyMain panel2 = new MyMain();
+		
 
-		IntroFloor intro = new IntroFloor();
+		IntroFloor intro = new IntroFloor(2200, 2142, 30, 30, "introFloor.png", "level1.txt", 66, 47);
+		FloorOne floorOne = new FloorOne(0, 0, 30, 30, "floor1Comp.png", "", 0, 0);
 
 		//c.add(panel);
 		//c.add(panel2);
 		c.add(intro);
+		c.add(floorOne);
 
 		f.setExtendedState(JFrame.MAXIMIZED_BOTH);	
 		f.setVisible(true);

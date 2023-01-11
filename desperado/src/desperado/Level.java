@@ -1,0 +1,213 @@
+package desperado;
+import java.util.Scanner;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import javax.imageio.ImageIO;
+import javax.swing.JPanel;
+import javax.swing.Timer;
+
+@SuppressWarnings("serial")
+public class Level extends JPanel implements KeyListener, ActionListener, MouseListener{
+	private Image map;
+	private Player player;
+	private Timer timer;
+	private Camera camera;
+	private int collision[][];
+	private int gridColumns, gridRows;
+	private String mapPath;
+	private String gridPath;
+	public static int panelWidth, panelHeight;
+
+	
+	public Level(int playerX, int playerY, int vx, int vy, String mapPath, String gridPath, int gridColumns, int gridRows) throws InterruptedException {
+		
+		
+		this.gridPath = gridPath;
+		this.mapPath = mapPath;
+		this.gridColumns = gridColumns;
+		this.gridRows = gridRows;
+		loadMap();
+
+		
+		
+		this.setFocusable(true);
+		this.requestFocusInWindow();
+		player = new Player(playerX, playerY, vx, vy);
+		player.setStay();
+
+		this.addKeyListener(this);
+		timer = new Timer(30, this);
+		timer.start();
+
+		this.addMouseListener(this);
+
+		camera = new Camera();
+		
+	}
+	
+	public Player getPlayer() {
+		return player;
+	}
+	
+	public void paint(Graphics g){
+		g.clearRect(0,0, panelWidth, panelHeight);
+		camera.applyTo(g);	
+		panelWidth = this.getWidth();
+		panelHeight = this.getHeight();
+
+		// Update camera position
+		camera.update(player.getX(), player.getY(), player.getSizeX(), player.getSizeY());
+
+		super.paint(g);
+
+		BufferedImage bufferedImage = null;
+		try {
+			bufferedImage = ImageIO.read(new File(mapPath));
+		} 
+		catch (Exception e) {
+		} 
+		
+		map = bufferedImage.getScaledInstance(4224, 3008, Image.SCALE_DEFAULT);
+
+		g.drawImage(map, 0, 0, this);
+		
+		player.myDraw(g);
+		player.loadCollisionMap(collision);
+		
+		levelChange();
+	}
+	
+	public void levelChange() {
+		
+	}
+
+	public void loadMap() {
+		System.out.println(gridRows + gridColumns);
+		collision = new int[gridRows][gridColumns];
+		
+
+		try {
+			File collisionMap = new File(this.gridPath);
+			Scanner sc = new Scanner(collisionMap);
+			while (sc.hasNextLine()) {
+				for (int i = 0; i < collision.length; i++) {
+					String[] line = sc.nextLine().split(" ");
+					for (int k = 0; k < line.length; k++) {
+						collision[i][k] = Integer.parseInt(line[k]);
+						System.out.print(collision[i][k]);
+					}
+					System.out.println();
+				}
+			}
+			sc.close();
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+
+	
+	public void keyTyped(KeyEvent e) {
+
+	}
+
+
+	public void keyPressed(KeyEvent e) {
+
+		if (e.getKeyCode() == KeyEvent.VK_W) {
+			player.setUp();
+		}
+
+		else if (e.getKeyCode() == KeyEvent.VK_S) {
+			player.setDown();
+		} 
+
+		else if (e.getKeyCode() == KeyEvent.VK_A) {
+			player.setLeft();
+		} 
+
+		else if (e.getKeyCode() == KeyEvent.VK_D) {
+			player.setRight();
+		}
+
+
+	}
+
+
+	public void keyReleased(KeyEvent e) {
+		if(player.getUp() && e.getKeyCode() == KeyEvent.VK_W) {
+			if(!player.getLeft() || !player.getDown() || !player.getRight())	
+				player.setStay();
+		}
+		else if(player.getDown() && e.getKeyCode() == KeyEvent.VK_S) {
+			if(!player.getLeft() || !player.getUp() || !player.getRight())	
+				player.setStay();
+		}
+		else if(player.getRight() && e.getKeyCode() == KeyEvent.VK_D) {
+			if(!player.getLeft() || !player.getUp() || !player.getDown())	
+				player.setStay();
+		}
+		else if(player.getLeft() && e.getKeyCode() == KeyEvent.VK_A) {
+			if(!player.getDown() || !player.getUp() || !player.getRight())	
+				player.setStay();
+		}
+	}
+
+
+
+
+
+	public void actionPerformed(ActionEvent e) {
+
+		if(player.getHp() == 0) {
+			timer.stop();
+		}
+
+		player.move();
+		repaint();
+
+	}
+
+
+
+	public void mouseClicked(MouseEvent e) {
+		player.attack();
+		System.out.println("clicked");
+	}
+
+
+
+	public void mousePressed(MouseEvent e) {
+
+	}
+
+
+
+	public void mouseReleased(MouseEvent e) {
+
+	}
+
+
+
+	public void mouseEntered(MouseEvent e) {
+
+	}
+
+
+	public void mouseExited(MouseEvent e) {
+
+	}
+
+}
+	
+	
+	
+	
+
