@@ -1,3 +1,5 @@
+
+
 public class Slime extends Entity{
 	private static final String slime_idle = "slime_idle_spritesheet.png";
 	private static final String slime_run = "slime_run_spritesheet.png";

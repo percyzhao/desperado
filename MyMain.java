@@ -1,3 +1,5 @@
+
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -9,7 +11,6 @@ public class MyMain extends JPanel implements KeyListener, ActionListener, Mouse
 
 	private Timer timer;
 	private Player player;
-	private Entity sword;
 	private Slime slime;
 	private int count = 0;
 	private boolean right = false, left = false, up = false, down = false;
@@ -23,7 +24,6 @@ public class MyMain extends JPanel implements KeyListener, ActionListener, Mouse
 
 		player = new Player(0,0,10,10);
 		slime = new Slime(300,300,10,10);
-		
 
 		this.addKeyListener(this);
 		timer = new Timer(80,this);
@@ -97,16 +97,6 @@ public class MyMain extends JPanel implements KeyListener, ActionListener, Mouse
 			if(!player.getDown() || !player.getUp() || !player.getRight())	
 				player.setStay();
 		}
-		else if(e.getKeyCode() == KeyEvent.VK_SPACE) {
-			if(player.getBow()) {
-				player.setSword();
-				player.setCount2(0);
-			}
-			else {
-				player.setBow();
-				player.setCount2(0);
-			}
-		}
 	}
 
 
@@ -139,7 +129,33 @@ public class MyMain extends JPanel implements KeyListener, ActionListener, Mouse
 		}
 
 
-		if(!player.collideDirection(slime, player).equals("not") && slime.getAlive()) {
+		if(player.collideDirection(slime).equals("left")) {
+			player.dmg();
+
+		}
+		else if(player.collideDirection(slime).equals("right")) {
+			player.dmg();
+
+		}
+		else if(player.collideDirection(slime).equals("above")) {
+			player.dmg();
+
+		}
+		else if(player.collideDirection(slime).equals("below")) {
+			player.dmg();
+
+		}
+		else if(player.collideDirection(slime).equals("inside")) {
+			/*
+			if(slime.getUp())
+				player.setY(slime.getY() - 50);
+			else if(slime.getDown())
+				player.setY(slime.getY() + 50);
+			else if(slime.getRight())
+				player.setY(slime.getX() + 50);
+			else if(slime.getLeft())
+				player.setY(slime.getX() - 50);
+			 */
 			player.dmg();
 
 		}
@@ -147,10 +163,6 @@ public class MyMain extends JPanel implements KeyListener, ActionListener, Mouse
 			timer.stop();
 		}
 
-		Entity sword = new Entity(player.getX() + player.getSizeX() + player.getCount2()*2, player.getY() , 0, 0, "knight_idle_spritesheet.png", "knight_idle_spritesheet.png",  100, 100, 0);
-		if(sword.collideDirection(sword, slime) != "not") {
-			slime.dead();
-		}
 
 		slime.move();
 		player.move();
@@ -161,24 +173,20 @@ public class MyMain extends JPanel implements KeyListener, ActionListener, Mouse
 
 
 	public void mouseClicked(MouseEvent e) {
-		if(!player.getBow())
-			player.attack();
-		
+		player.attack();
 		System.out.println("clicked");
 	}
 
 
 
 	public void mousePressed(MouseEvent e) {
-		player.drawBow(true);
-		if(player.getBow())
-			player.attack();
+
 	}
 
 
 
 	public void mouseReleased(MouseEvent e) {
-		player.drawBow(false);
+
 	}
 
 
