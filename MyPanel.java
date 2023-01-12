@@ -13,11 +13,10 @@ public class MyPanel extends JPanel implements ActionListener, MouseListener{
 	private ImageIcon icon;
 	
 	public MyPanel() {
-		 
+		
 		
 		start = new JButton("Start");
-		exit = new JButton("Exit");
-		instruct = new JButton("Instructions");
+		
 		
 		
 		JPanel panelc = new JPanel();
@@ -25,20 +24,20 @@ public class MyPanel extends JPanel implements ActionListener, MouseListener{
 		
 		JPanel panels = new JPanel();
 		
+		
+		
 		this.add(panels, BorderLayout.SOUTH);
 		this.add(panelc, BorderLayout.CENTER);
 		
-		panels.setLayout(new FlowLayout());
+		panels.setLayout(new BorderLayout());
 		
 		
 		
-		panels.add(start);
-		panels.add(exit);
-		panels.add(instruct);
+		panels.add(start, BorderLayout.CENTER);
+	
 		
 		start.addActionListener(this);
-		exit.addActionListener(this);
-		instruct.addActionListener(this);
+		repaint();
 		
 		
 		
@@ -55,14 +54,15 @@ public class MyPanel extends JPanel implements ActionListener, MouseListener{
 	
 		if(e.getSource() == start) {
 			Main.cards.next(Main.c);
-			this.setFocusable(false);
 		}
 		
 	}
 	
+	
+	
 	public void paint(Graphics g){
 
-		super.paint(g);
+		
 
 		BufferedImage bufferedImage = null;
 		try {
@@ -75,6 +75,19 @@ public class MyPanel extends JPanel implements ActionListener, MouseListener{
 		image = bufferedImage.getScaledInstance(getWidth(), getHeight(), Image.SCALE_DEFAULT);
 		
 		g.drawImage(image, 0, 0, this);
+		
+		
+		BufferedImage bufferedImage2 = null;
+		try {
+			bufferedImage2 = ImageIO.read(new File("start.png"));
+		} 
+		catch (Exception e) {
+	
+		} 
+		image = bufferedImage2.getScaledInstance(200, 100, Image.SCALE_DEFAULT);
+		
+		g.drawImage(image, getWidth()/2-100, getHeight()	-80, this);
+		repaint();
 		
 		
 	
