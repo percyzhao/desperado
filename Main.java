@@ -25,7 +25,7 @@ public class Main {
 		//MyPanel panel = new MyPanel();
 
 		//Panel 2, MyMain(), is currently a knight testing screen.
-		MyMain panel2 = new MyMain();
+		MyMain panel2 = new MyMain(2100, 2142, 30, 30, "white.png", "level1.txt", 66, 47);
 
 		//IntroFloor intro = new IntroFloor(2200, 2142, 30, 30, "composite.png", "level1.txt", 66, 47);
 

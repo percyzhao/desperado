@@ -29,7 +29,6 @@ public class Entity{
 
 	private Image rock;
 	private boolean right, left, up, down, stay;
-	private ArrayList<Rectangle> obstacles = new ArrayList<Rectangle>();// move to somewhere else
 	private int hp;
 	private boolean takenDmg;
 	private int count = 0, count2 = 0;
@@ -202,46 +201,9 @@ public class Entity{
 	public void setCount2(int n) {
 		count2 = n;
 	}
-	public void loadCollisionMap(int[][] map) {
-		obstacles.clear();
-		  for (int i = 0; i < map.length; i++) {
-		    for (int j = 0; j < map[i].length; j++) {
-		      if (map[i][j] == 1) {
-		        // 16 is the width and height of each collision block in pixels
-		        obstacles.add(new Rectangle(j * 64, i * 64, 64, 64));
-		      }
-		    }
-		  }
-		}
 	
-	public String collideDirection() {
-		Rectangle player = new Rectangle(x - xVelocity, y-yVelocity , sizeX + xVelocity*2, sizeY + yVelocity*2);
-		for(int i = 0; i < obstacles.size(); i ++) {
-			if(player.intersects(obstacles.get(i))) {
-
-				if (right && x + sizeX <= obstacles.get(i).getX() && y > obstacles.get(i).getY() - sizeY && y < obstacles.get(i).getY() + obstacles.get(i).getHeight()) {
-					System.out.println("left");
-					return "left";
-				}
-				else if (left && x >= obstacles.get(i).getX() + obstacles.get(i).getWidth() && y > obstacles.get(i).getY() - sizeY && y < obstacles.get(i).getY() + obstacles.get(i).getHeight()) {
-					System.out.println("right");
-					return "right";
-				}
-
-				else if (up && y >= obstacles.get(i).getY() + obstacles.get(i).getHeight() && x > obstacles.get(i).getX() - obstacles.get(i).getWidth() && x < obstacles.get(i).getX() + obstacles.get(i).getWidth()) {
-					System.out.println("below"); 
-					return "below";
-				}
-
-				else if (down && y + sizeY <= obstacles.get(i).getY() && x > obstacles.get(i).getX() - obstacles.get(i).getWidth() && x < obstacles.get(i).getX() + obstacles.get(i).getWidth()) {
-					System.out.println("above");
-					return "above";
-				}
-			}
-		}
-		//System.out.println("nothing");
-		return "not";
-	}
+	
+	
 
 	public boolean getAlive() {
 		return alive;
@@ -249,40 +211,7 @@ public class Entity{
 	public void drawBow(boolean n) {
 		drawBow = n;
 	}
-	public String collideDirection(Entity other, Entity self) {
-		Rectangle selfHit = new Rectangle(self.getX() + xVelocity, self.getY() + yVelocity, 80, 80);
-		Rectangle entity = new Rectangle(other.getX() - this.xVelocity,other.getY() - this.yVelocity , 100, 100);
-		Rectangle real = new Rectangle(other.getX(), other.getY(), 80, 80);
-		if(!takenDmg) {
-			if(selfHit.intersects(entity)) {
-
-				if(x + 60 + xVelocity < other.getX() - xVelocity && y + yVelocity > other.getY() - yVelocity - 70 && y + yVelocity  + 100 < other.getY() - yVelocity + 190) {
-					//System.out.println("left");
-					return "left";
-
-				}
-				else if(x + xVelocity + 60 > other.getX() - xVelocity + 100 && y + yVelocity > other.getY() - yVelocity - 70 && y + yVelocity < other.getY() - yVelocity + 90) {
-					//System.out.println("right");
-					return "right";
-				}
-
-				else if(y + yVelocity + 60 > other.getY() - yVelocity + 100 && x + xVelocity > other.getX() - xVelocity - 70 && x + xVelocity < other.getX() - xVelocity + 90) {
-					//System.out.println("below");
-					return "below";
-				}
-
-				else if(y + yVelocity + 60 < other.getY() - yVelocity && x + xVelocity > other.getX() - xVelocity - 70 && x + xVelocity + 100 < other.getX() - xVelocity + 190) {
-					//System.out.println("above");
-					return "above";
-				}
-				else {
-					return "inside";
-				}
-			}
-		}
-		return "not";	
-	}
-
+	
 
 
 
@@ -294,15 +223,15 @@ public class Entity{
 	
 	
 
-	public void move() {
+	public void move(boolean canRight, boolean canLeft, boolean canUp, boolean canDown) {
 
-		if(right && !collideDirection().equals("left"))
+		if(right && canRight)
 			x += xVelocity;
-		if(left && !collideDirection().equals("right"))
+		if(left && canLeft)
 			x -= xVelocity;
-		if(up && !collideDirection().equals("below"))
+		if(up && canUp)
 			y -= yVelocity;
-		if(down && !collideDirection().equals("above"))
+		if(down && canDown)
 			y += xVelocity;
 
 	}
@@ -347,7 +276,8 @@ public class Entity{
 
 		if(alive) {
 			g.drawImage(scaledImage, x, y, null);
-			g.drawRect(x, y , sizeX, sizeY);
+			g.drawRect(x, y, sizeX, sizeY);
+
 		}
 
 		if(attack){
@@ -379,7 +309,7 @@ public class Entity{
 
 				// Rotation informati
 
-				double rotationRequired = Math.toRadians (MouseInfo.getPointerInfo().getLocation().getY()/2);
+				double rotationRequired = Math.toRadians (MouseInfo.getPointerInfo().getLocation().getY()/3);
 				double locationX = bow.getWidth() / 2;
 				double locationY = bow.getHeight() / 2;
 				AffineTransform tx = AffineTransform.getRotateInstance(rotationRequired, locationX, locationY);
@@ -399,9 +329,7 @@ public class Entity{
 		if (count == 20 && takenDmg) {
 			takenDmg = false;
 		}
-		for(int i = 0; i < obstacles.size(); i++) {
-			g.drawRect((int)obstacles.get(i).getX(), (int)obstacles.get(i).getY(), 64, 64);
-		}
+		
 
 
 
