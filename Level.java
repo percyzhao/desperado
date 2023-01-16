@@ -1,4 +1,3 @@
-
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.awt.*;
@@ -16,18 +15,25 @@ import javax.swing.Timer;
 
 @SuppressWarnings("serial")
 public class Level extends JPanel implements KeyListener, ActionListener, MouseListener{
+	public final int scale = 4;
 	private Image map;
 	private Player player;
 	private Timer timer;
 	private Camera camera;
-	private int collision[][];
+	private int collisionMap[][];
 	private int gridColumns, gridRows;
 	private int leftBound, rightBound, upBound, downBound;
 	private String mapPath;
 	private String gridPath;
-	private static int panelWidth, panelHeight;
+	private int width, height;
+	private int tileSize;
+	public static int panelWidth, panelHeight;
+	
 	private ArrayList<Entity> enemies = new ArrayList<Entity>();
 	private int count = 0;
+	
+	private Collision collision;
+
 	
 
 	public static int getPanelWidth() {
@@ -36,20 +42,25 @@ public class Level extends JPanel implements KeyListener, ActionListener, MouseL
 	public static int getPanelHeight() {
 		return panelHeight;
 	}
-	public Level(int playerX, int playerY, int vx, int vy, String mapPath, String gridPath, int gridColumns, int gridRows, int leftBound, int rightBound, int upBound, int downBound, int numEnemies) throws InterruptedException {
+	
+	public Level(int playerX, int playerY, int vx, int vy, String mapPath, String gridPath, int gridColumns, int gridRows, int leftBound, int rightBound, int upBound, int downBound, int width, int height, int tileSize, int numEnemies) throws InterruptedException {
 		
 		this.leftBound = leftBound;
 		this.rightBound = rightBound;
 		this.upBound = upBound;
 		this.downBound = downBound;
 		
+		this.width = width;
+		this.height = height;
+		
 		this.gridPath = gridPath;
 		this.mapPath = mapPath;
 		this.gridColumns = gridColumns;
 		this.gridRows = gridRows;
+		this.tileSize = tileSize;
 		loadMap();
 
-		
+		collision = new Collision();
 		
 		this.setFocusable(true);
 		this.requestFocusInWindow();
@@ -57,12 +68,21 @@ public class Level extends JPanel implements KeyListener, ActionListener, MouseL
 		player.setStay();
 
 		this.addKeyListener(this);
-		timer = new Timer(30, this);
+		timer = new Timer(80, this);
 		timer.start();
 
 		this.addMouseListener(this);
 
 		camera = new Camera();
+		
+		BufferedImage bufferedImage = null;
+		try {
+			bufferedImage = ImageIO.read(new File(mapPath));
+		} 
+		catch (Exception e) {
+		} 
+		
+		map = bufferedImage.getScaledInstance(width*scale, height*scale, Image.SCALE_DEFAULT);
 		//for(int i = 0; i < numEnemies; i++) {
 			//Slime slime = new Slime(2200, 1000 - i * 100, 10, 10);
 			//enemies.add(slime);
@@ -86,23 +106,35 @@ public class Level extends JPanel implements KeyListener, ActionListener, MouseL
 
 		super.paint(g);
 
-		BufferedImage bufferedImage = null;
-		try {
-			bufferedImage = ImageIO.read(new File(mapPath));
-		} 
-		catch (Exception e) {
-		} 
+		for (int i = 0; i < gridRows; i++) {
+		    for (int j = 0; j < gridColumns; j++) {
+		        //calculate the distance between the player and the current tile
+		        int distance = (int) Math.sqrt(Math.pow(player.getX() - (j * tileSize*scale), 2) + Math.pow(player.getY() - (i * tileSize*scale), 2));
+		        if (distance <= 1380) { //if the distance is less than x pixels
+		            //create a source rectangle for the current tile
+		            Rectangle sourceRect = new Rectangle(j * tileSize*scale, i * tileSize*scale, tileSize*scale, tileSize*scale);
+		            //draw the portion of the background image specified by the source rectangle
+		            g.drawImage(map, j * tileSize*scale, i * tileSize*scale, j * tileSize*scale + tileSize*scale, i * tileSize*scale + tileSize*scale, sourceRect.x, sourceRect.y, sourceRect.x + sourceRect.width, sourceRect.y + sourceRect.height, null);
+		        }
+		    }
+		}
 		
-		map = bufferedImage.getScaledInstance(4224, 3008, Image.SCALE_DEFAULT);
-
-		g.drawImage(map, 0, 0, this);
+	
+		player.myDraw(g);
+		
+		levelChange();
 		
 		player.myDraw(g);
-		player.loadCollisionMap(collision);
+		collision.loadCollisionMap(collisionMap);
+
+		for(int i = 0; i < collision.getMap().size(); i++) {
+			g.drawRect((int)collision.getMap().get(i).getX(), (int)collision.getMap().get(i).getY(), 64, 64);
+		}
 		
 		for(int i = 0; i < enemies.size(); i++) {
 			enemies.get(i).myDraw(g);
 		}
+
 		levelChange();
 	}
 	
@@ -112,18 +144,17 @@ public class Level extends JPanel implements KeyListener, ActionListener, MouseL
 
 	public void loadMap() {
 		System.out.println(gridRows + gridColumns);
-		collision = new int[gridRows][gridColumns];
+		collisionMap = new int[gridRows][gridColumns];
 		
 
 		try {
-			File collisionMap = new File(this.gridPath);
-			Scanner sc = new Scanner(collisionMap);
+			Scanner sc = new Scanner(new File(this.gridPath));
 			while (sc.hasNextLine()) {
-				for (int i = 0; i < collision.length; i++) {
+				for (int i = 0; i < collisionMap.length; i++) {
 					String[] line = sc.nextLine().split(" ");
 					for (int k = 0; k < line.length; k++) {
-						collision[i][k] = Integer.parseInt(line[k]);
-						System.out.print(collision[i][k]);
+						collisionMap[i][k] = Integer.parseInt(line[k]);
+						System.out.print(collisionMap[i][k]);
 					}
 					System.out.println();
 				}
@@ -144,26 +175,33 @@ public class Level extends JPanel implements KeyListener, ActionListener, MouseL
 	public void keyPressed(KeyEvent e) {
 
 		if (e.getKeyCode() == KeyEvent.VK_W) {
-			player.setUp();
+			if(collision.getCanUp())
+				player.setUp();
 		}
 
 		else if (e.getKeyCode() == KeyEvent.VK_S) {
-			player.setDown();
+			if(collision.getCanDown())
+				player.setDown();
 		} 
 
 		else if (e.getKeyCode() == KeyEvent.VK_A) {
-			player.setLeft();
+			if(collision.getCanLeft())
+				player.setLeft();
 		} 
 
 		else if (e.getKeyCode() == KeyEvent.VK_D) {
-			player.setRight();
+			if(collision.getCanRight())
+				player.setRight();
 		}
 		else if(e.getKeyCode() == KeyEvent.VK_SPACE) {
 			if(player.getBow()) {
 				player.setSword();
+				player.setAttackTime(0);
 			}
-			else
+			else {
 				player.setBow();
+				player.setAttackTime(0);
+			}
 		}
 
 
@@ -222,27 +260,26 @@ public class Level extends JPanel implements KeyListener, ActionListener, MouseL
 		}
 		*/
 		
+		/*
 		for(int i = 0; i < enemies.size(); i++) {
-			if(!player.collideDirection(enemies.get(i), player).equals("not") && enemies.get(i).getAlive()) {
+			if(!.collideDirection(enemies.get(i), player).equals("not") && enemies.get(i).getAlive()) {
 				player.dmg();
-
 			}
 			if(player.getHp() == 0) {
 				timer.stop();
 			}
-
 			Entity sword = new Entity(player.getX() + player.getSizeX() + player.getCount2()*2, player.getY() , 0, 0, "knight_idle_spritesheet.png", "knight_idle_spritesheet.png",  100, 100, 0);
 			if(sword.collideDirection(sword, enemies.get(i)) != "not") {
 				enemies.get(i).dead();
 			}
-
 			enemies.get(i).move();
 		}
+		*/
 		
 
 
-		
-		player.move();
+		collision.collideDirection(player);
+		player.move(collision.getCanRight(),collision.getCanLeft(),collision.getCanUp(),collision.getCanDown());
 		repaint();
 
 	}
@@ -250,8 +287,8 @@ public class Level extends JPanel implements KeyListener, ActionListener, MouseL
 
 
 	public void mouseClicked(MouseEvent e) {
-		
-		player.attack();
+		if(!player.getBow())
+			player.attack();
 		
 		System.out.println("clicked");
 	}
@@ -259,13 +296,15 @@ public class Level extends JPanel implements KeyListener, ActionListener, MouseL
 
 
 	public void mousePressed(MouseEvent e) {
-
+		player.drawBow(true);
+		if(player.getBow())
+			player.attack();
 	}
 
 
 
 	public void mouseReleased(MouseEvent e) {
-
+		player.drawBow(false);
 	}
 
 
