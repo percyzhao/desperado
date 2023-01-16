@@ -1,3 +1,4 @@
+package desperado;
 import java.awt.AlphaComposite;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -37,6 +38,7 @@ public class Entity{
 	private boolean alive = true;
 	private BufferedImage sword, bow;
 	private boolean bow2 = false, drawBow = true;
+	private Graphics2D g;
 	
 
 
@@ -70,7 +72,7 @@ public class Entity{
 		} 
 
 		BufferedImage dimg = new BufferedImage(100, 100, sword.getType());  
-		Graphics2D g = dimg.createGraphics();  
+		g = dimg.createGraphics();  
 		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);  
 		g.drawImage(sword, 0, 0, 100, 100, 0, 0, sword.getWidth(), sword.getHeight() , null);  
 		g.dispose(); 
@@ -144,6 +146,10 @@ public class Entity{
 
 	public int getHp() {
 		return hp;
+	}
+	
+	public boolean getAlive() {
+		return alive;
 	}
 
 	//setters
@@ -220,21 +226,21 @@ public class Entity{
 			if(player.intersects(obstacles.get(i))) {
 
 				if (right && x + sizeX <= obstacles.get(i).getX() && y > obstacles.get(i).getY() - sizeY && y < obstacles.get(i).getY() + obstacles.get(i).getHeight()) {
-					System.out.println("left");
+					//System.out.println("left");
 					return "left";
 				}
 				else if (left && x >= obstacles.get(i).getX() + obstacles.get(i).getWidth() && y > obstacles.get(i).getY() - sizeY && y < obstacles.get(i).getY() + obstacles.get(i).getHeight()) {
-					System.out.println("right");
+					//System.out.println("right");
 					return "right";
 				}
 
 				else if (up && y >= obstacles.get(i).getY() + obstacles.get(i).getHeight() && x > obstacles.get(i).getX() - obstacles.get(i).getWidth() && x < obstacles.get(i).getX() + obstacles.get(i).getWidth()) {
-					System.out.println("below"); 
+					//System.out.println("below"); 
 					return "below";
 				}
 
 				else if (down && y + sizeY <= obstacles.get(i).getY() && x > obstacles.get(i).getX() - obstacles.get(i).getWidth() && x < obstacles.get(i).getX() + obstacles.get(i).getWidth()) {
-					System.out.println("above");
+					//System.out.println("above");
 					return "above";
 				}
 			}
@@ -243,9 +249,7 @@ public class Entity{
 		return "not";
 	}
 
-	public boolean getAlive() {
-		return alive;
-	}
+
 	public void drawBow(boolean n) {
 		drawBow = n;
 	}
@@ -377,7 +381,7 @@ public class Entity{
 				int drawLocationX = x + sizeX;
 				int drawLocationY = y - 10;
 
-				// Rotation informati
+				// Rotation information
 
 				double rotationRequired = Math.toRadians (MouseInfo.getPointerInfo().getLocation().getY()/2);
 				double locationX = bow.getWidth() / 2;

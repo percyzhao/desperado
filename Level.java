@@ -1,4 +1,4 @@
-
+	package desperado;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.awt.*;
@@ -16,6 +16,7 @@ import javax.swing.Timer;
 
 @SuppressWarnings("serial")
 public class Level extends JPanel implements KeyListener, ActionListener, MouseListener{
+	public final int scale = 4;
 	private Image map;
 	private Player player;
 	private Timer timer;
@@ -25,29 +26,37 @@ public class Level extends JPanel implements KeyListener, ActionListener, MouseL
 	private int leftBound, rightBound, upBound, downBound;
 	private String mapPath;
 	private String gridPath;
-	private static int panelWidth, panelHeight;
+	private int width, height;
+	private int tileSize;
+	public static int panelWidth, panelHeight;
+	
+	/*
+	 * the fuck
+	 */
 	private ArrayList<Entity> enemies = new ArrayList<Entity>();
 	private int count = 0;
 	
 
-	public static int getPanelWidth() {
-		return panelWidth;
-	}
-	public static int getPanelHeight() {
-		return panelHeight;
-	}
-	public Level(int playerX, int playerY, int vx, int vy, String mapPath, String gridPath, int gridColumns, int gridRows, int leftBound, int rightBound, int upBound, int downBound, int numEnemies) throws InterruptedException {
+	
+	public Level(int playerX, int playerY, int vx, int vy, String mapPath, String gridPath, int gridColumns, int gridRows, int leftBound, int rightBound, int upBound, int downBound, int width, int height, int tileSize) throws InterruptedException {
 		
 		this.leftBound = leftBound;
 		this.rightBound = rightBound;
 		this.upBound = upBound;
 		this.downBound = downBound;
 		
+		this.width = width;
+		this.height = height;
+		
 		this.gridPath = gridPath;
 		this.mapPath = mapPath;
 		this.gridColumns = gridColumns;
 		this.gridRows = gridRows;
+		
+		this.tileSize = tileSize;
 		loadMap();
+
+		
 
 		
 		
@@ -63,12 +72,14 @@ public class Level extends JPanel implements KeyListener, ActionListener, MouseL
 		this.addMouseListener(this);
 
 		camera = new Camera();
-		//for(int i = 0; i < numEnemies; i++) {
-			//Slime slime = new Slime(2200, 1000 - i * 100, 10, 10);
-			//enemies.add(slime);
-		//}
 		
-		
+	}
+	
+	public static int getPanelWidth() {
+		return panelWidth;
+	}
+	public static int getPanelHeight() {
+		return panelHeight;
 	}
 	
 	public Player getPlayer() {
@@ -76,10 +87,12 @@ public class Level extends JPanel implements KeyListener, ActionListener, MouseL
 	}
 	
 	public void paint(Graphics g){
+		
 		g.clearRect(0,0, panelWidth, panelHeight);
 		camera.applyTo(g);	
 		panelWidth = this.getWidth();
 		panelHeight = this.getHeight();
+		
 
 		// Update camera position
 		camera.update(player.getX(), player.getY(), player.getSizeX(), player.getSizeY(), leftBound, rightBound, upBound, downBound);
@@ -93,16 +106,25 @@ public class Level extends JPanel implements KeyListener, ActionListener, MouseL
 		catch (Exception e) {
 		} 
 		
-		map = bufferedImage.getScaledInstance(4224, 3008, Image.SCALE_DEFAULT);
-
-		g.drawImage(map, 0, 0, this);
+		map = bufferedImage.getScaledInstance(width*scale, height*scale, Image.SCALE_DEFAULT);
 		
+		
+		for (int i = 0; i < gridRows; i++) {
+		    for (int j = 0; j < gridColumns; j++) {
+		        //calculate the distance between the player and the current tile
+		        int distance = (int) Math.sqrt(Math.pow(player.getX() - (j * tileSize*scale), 2) + Math.pow(player.getY() - (i * tileSize*scale), 2));
+		        if (distance <= 1380) { //if the distance is less than x pixels
+		            //create a source rectangle for the current tile
+		            Rectangle sourceRect = new Rectangle(j * tileSize*scale, i * tileSize*scale, tileSize*scale, tileSize*scale);
+		            //draw the portion of the background image specified by the source rectangle
+		            g.drawImage(map, j * tileSize*scale, i * tileSize*scale, j * tileSize*scale + tileSize*scale, i * tileSize*scale + tileSize*scale, sourceRect.x, sourceRect.y, sourceRect.x + sourceRect.width, sourceRect.y + sourceRect.height, null);
+		        }
+		    }
+		}
+	
 		player.myDraw(g);
 		player.loadCollisionMap(collision);
 		
-		for(int i = 0; i < enemies.size(); i++) {
-			enemies.get(i).myDraw(g);
-		}
 		levelChange();
 	}
 	
@@ -111,10 +133,9 @@ public class Level extends JPanel implements KeyListener, ActionListener, MouseL
 	}
 
 	public void loadMap() {
-		System.out.println(gridRows + gridColumns);
+
 		collision = new int[gridRows][gridColumns];
 		
-
 		try {
 			File collisionMap = new File(this.gridPath);
 			Scanner sc = new Scanner(collisionMap);
@@ -193,6 +214,7 @@ public class Level extends JPanel implements KeyListener, ActionListener, MouseL
 
 
 
+
 	public void actionPerformed(ActionEvent e) {
 
 
@@ -250,9 +272,7 @@ public class Level extends JPanel implements KeyListener, ActionListener, MouseL
 
 
 	public void mouseClicked(MouseEvent e) {
-		
 		player.attack();
-		
 		System.out.println("clicked");
 	}
 
@@ -280,3 +300,7 @@ public class Level extends JPanel implements KeyListener, ActionListener, MouseL
 	}
 
 }
+	
+	
+	
+	
