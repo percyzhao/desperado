@@ -31,13 +31,12 @@ public class Entity{
 	private boolean right, left, up, down, stay;
 	private int hp;
 	private boolean takenDmg;
-	private int iFrames = 0, attackTime = 0;
+	private int count = 0, count2 = 0;
 	private boolean attack, attackBow;
 	private boolean alive = true;
 	private BufferedImage sword, bow;
 	private boolean bow2 = false, drawBow = true;
-	private Graphics2D g;
-
+	
 
 
 
@@ -60,23 +59,23 @@ public class Entity{
 		idleSheet.loadImages(idleFile);
 		rightSheet.loadImages(runFile);
 
-
-
+		
+		
 		try {
 			sword = ImageIO.read(new File("weapon_sword_2.png"));
 		} 
 		catch (Exception e) {
-
+	
 		} 
 
 		BufferedImage dimg = new BufferedImage(100, 100, sword.getType());  
-		g = dimg.createGraphics();  
+		Graphics2D g = dimg.createGraphics();  
 		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);  
 		g.drawImage(sword, 0, 0, 100, 100, 0, 0, sword.getWidth(), sword.getHeight() , null);  
 		g.dispose(); 
 		sword = dimg;
-
-
+		
+		
 		try {
 			bow = ImageIO.read(new File("bow.png"));
 		} 
@@ -90,10 +89,10 @@ public class Entity{
 		g2.drawImage(bow, 0, 0, 100, 100, 0, 0, bow.getWidth(), bow.getHeight() , null);  
 		g2.dispose(); 
 		bow = dimg2;
-
-
-
-
+		
+       
+       
+		
 
 
 	}
@@ -199,12 +198,12 @@ public class Entity{
 	public void setSword() {
 		bow2 = false;
 	}
-	public void setAttackTime(int n) {
-		attackTime = n;
+	public void setCount2(int n) {
+		count2 = n;
 	}
-
-
-
+	
+	
+	
 
 	public boolean getAlive() {
 		return alive;
@@ -212,17 +211,17 @@ public class Entity{
 	public void drawBow(boolean n) {
 		drawBow = n;
 	}
-
+	
 
 
 
 	public void attack() {
 		attack = true;
-		attackTime = 0;
-
+		count2 = 0;
+		
 	}
-
-
+	
+	
 
 	public void move(boolean canRight, boolean canLeft, boolean canUp, boolean canDown) {
 
@@ -242,14 +241,14 @@ public class Entity{
 			dmg = false;
 		else {
 			dmg = true;
-			iFrames = 0;
+			count = 0;
 			takenDmg = true;
 		}
 
 	}
 
-	public int getattackTime() {
-		return attackTime;
+	public int getCount2() {
+		return count2;
 	}
 	public void dead() {
 		alive = false;
@@ -267,7 +266,7 @@ public class Entity{
 		Image scaledImage = entityImg.getScaledInstance(sizeX, sizeY, Image.SCALE_DEFAULT);
 
 		if(takenDmg) {
-			if(iFrames % 2==0)
+			if(count % 2==0)
 				((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) 0.5));
 			else
 				((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) 0.3));
@@ -277,7 +276,7 @@ public class Entity{
 
 		if(alive) {
 			g.drawImage(scaledImage, x, y, null);
-			g.drawRect(x, y, sizeX, sizeY);
+			g.drawRect(x, y , sizeX, sizeY);
 
 		}
 
@@ -286,22 +285,22 @@ public class Entity{
 				// The required drawing location
 				int drawLocationX = x + sizeX;
 				int drawLocationY = y;
-
+	
 				// Rotation information
-
+	
 				double rotationRequired = Math.toRadians (45);
 				double locationX = sword.getWidth() / 2;
 				double locationY = sword.getHeight() / 2;
 				AffineTransform tx = AffineTransform.getRotateInstance(rotationRequired, locationX, locationY);
 				AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
-
-
-				((Graphics2D) g).drawImage(op.filter(sword, null), drawLocationX + attackTime * 2, drawLocationY, null);
-
-
-
-
-				if(attackTime == 40)
+	
+				
+				((Graphics2D) g).drawImage(op.filter(sword, null), drawLocationX + count2 * 2, drawLocationY, null);
+				
+				
+				
+	
+				if(count2 == 40)
 					attack = false;
 			}
 			else {
@@ -318,19 +317,19 @@ public class Entity{
 
 				if(drawBow)
 					((Graphics2D) g).drawImage(op.filter(bow, null), drawLocationX, drawLocationY, null);
-
+				
 			}
 		}
+		
 
 
 
-
-		iFrames++;
-		attackTime += 20;
-		if (iFrames == 20 && takenDmg) {
+		count++;
+		count2 += 20;
+		if (count == 20 && takenDmg) {
 			takenDmg = false;
 		}
-
+		
 
 
 
