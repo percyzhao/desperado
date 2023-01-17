@@ -3,15 +3,11 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.MouseInfo;
-import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-
 import javax.imageio.ImageIO;
 
 public class Entity{
@@ -27,7 +23,6 @@ public class Entity{
 	private int sizeX, sizeY;
 	private boolean dmg;
 
-	private Image rock;
 	private boolean right, left, up, down, stay;
 	private int hp;
 	private boolean takenDmg;
