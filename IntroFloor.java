@@ -1,4 +1,4 @@
-
+package desperado;
 @SuppressWarnings("serial")
 
 
@@ -22,6 +22,7 @@ public class IntroFloor extends Level{
 	public void levelChange() {
 		if((getPlayer().getY() <= 422 && getPlayer().getY() >= 182) && (getPlayer().getX() >= 2020 && getPlayer().getX() <= 2100)) {
 			Main.cards.next(Main.c);
+			System.out.println("hi");
 		}
 	}
 }
