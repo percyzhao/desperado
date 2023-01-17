@@ -124,7 +124,6 @@ public class Level extends JPanel implements KeyListener, ActionListener, MouseL
 		
 		levelChange();
 		
-		player.myDraw(g);
 		collision.loadCollisionMap(collisionMap);
 
 		for(int i = 0; i < collision.getMap().size(); i++) {
@@ -278,8 +277,8 @@ public class Level extends JPanel implements KeyListener, ActionListener, MouseL
 		
 
 
-		collision.collideDirection(player);
-		player.move(collision.getCanRight(),collision.getCanLeft(),collision.getCanUp(),collision.getCanDown());
+		boolean[] canMove = collision.collideDirection(player);
+		player.move(canMove[0],canMove[1],canMove[2],canMove[3]);
 		repaint();
 
 	}

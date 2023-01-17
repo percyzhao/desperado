@@ -1,5 +1,3 @@
-
-
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.geom.AffineTransform;
@@ -16,8 +14,7 @@ public class Player extends Entity{
 	 */
 	private static final String KNIGHT_IDLE_PATH = "knight_idle_spritesheet.png";
 	private static final String KNIGHT_RUN_PATH = "knight_run_spritesheet.png";
-	private BufferedImage buffSword;
-	private Image sword;
+	
 
 
 
@@ -27,6 +24,8 @@ public class Player extends Entity{
 
 
 	}
+	
+
 
 
 
