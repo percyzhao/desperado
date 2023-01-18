@@ -1,4 +1,4 @@
-
+package desperado;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
@@ -28,13 +28,17 @@ public class Main {
 		//Panel 2, MyMain(), is currently a knight testing screen.
 		
 
-		IntroFloor intro = new IntroFloor(2200, 2142, 30, 30, "introFloor.png", "level1.txt", 66, 47);
-		FloorOne floorOne = new FloorOne(1350, 570, 30, 30, "floorOne.png", "level2.txt" , 119, 68);
+		IntroFloor introFloor = new IntroFloor(2062, 2640, 30, 30, "introFloor.png", "introFloor.txt", 66, 47);
+		FloorOne floorOne = new FloorOne(1350, 570, 70, 70, "floorOne.png", "floor1.txt" , 119, 68);
+		FloorTwo floorTwo = new FloorTwo(1090, 450, 30, 30, "floorTwo.png", "floor2.txt" , 68, 73);
+		BossFloor bossFloor = new BossFloor(2060, 340, 30, 30, "bossFloor.png", "bossFloor.txt" , 66, 43);
 
 		//c.add(panel);
 		//c.add(panel2);
-		c.add(intro);
-		c.add(floorOne);
+		//c.add(introFloor);
+		//c.add(floorOne);
+		//c.add(floorTwo);
+		c.add(bossFloor);
 		
 		f.setExtendedState(JFrame.MAXIMIZED_BOTH);	
 		f.setVisible(true);
@@ -46,7 +50,3 @@ public class Main {
 
 	}
 }
-
-
-
-

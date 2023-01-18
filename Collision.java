@@ -1,3 +1,4 @@
+package desperado;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 
@@ -52,47 +53,43 @@ public class Collision {
 		return "not";	
 	}
 	*/
-	
-	public void collideDirection(Entity self) {
-		Rectangle hitbox = new Rectangle(self.getX(), self.getY(), self.getSizeX(),  self.getSizeY());
+
+	public boolean[] collideDirection(Entity self) {
+		boolean[] canMove = {true, true, true, true};
+		int x = self.getX();
+		int y = self.getY();
+		int sizeX = self.getSizeX();
+		int sizeY = self.getSizeY();
+		int xVelocity = self.getXVelocity();
+		int yVelocity = self.getYVelocity();
 		
+		Rectangle player = new Rectangle(x, y-yVelocity , sizeX + xVelocity, sizeY + yVelocity);
 		for(int i = 0; i < obstacles.size(); i ++) {
-			if(hitbox.intersects(obstacles.get(i))) {
-				System.out.println("bruh");
-				canRight = false;
-				canLeft = false;
-				canUp = false;
-				canDown = false;
+			if(player.intersects(obstacles.get(i))) {
+
 				
-				if (self.getRight() && self.getX() + self.getSizeX() <= obstacles.get(i).getX() && self.getY() > obstacles.get(i).getY() - self.getSizeY() && self.getY() < obstacles.get(i).getY() + obstacles.get(i).getHeight()) {
-					
-					System.out.println("left");
-					canLeft = false;
-					canRight = true;
+				if (self.getRight() && x + sizeX <= obstacles.get(i).getX() && y >= obstacles.get(i).getY() - sizeY && y <= obstacles.get(i).getY() + obstacles.get(i).getHeight()) {
+					//System.out.println("left");
+					canMove[0] = false;
 				}
-				else if (self.getLeft() && self.getX() >= obstacles.get(i).getX() + obstacles.get(i).getWidth() && self.getY() > obstacles.get(i).getY() - self.getSizeY() && self.getY() < obstacles.get(i).getY() + obstacles.get(i).getHeight()) {
-					System.out.println("right");
-					canRight = false;
-					canLeft = true;
+				else if (self.getLeft() && x >= obstacles.get(i).getX()) {
+					//System.out.println("right");
+					canMove[1] = false;
 				}
 
-				else if (self.getUp() && self.getY()>= obstacles.get(i).getY() + obstacles.get(i).getHeight() && self.getX() > obstacles.get(i).getX() - obstacles.get(i).getWidth() && self.getX() < obstacles.get(i).getX() + obstacles.get(i).getWidth()) {
-					System.out.println("below"); 
-					canUp = false;
-					canDown = true;
+				else if (self.getUp() && y >= obstacles.get(i).getY() && x >= obstacles.get(i).getX() - sizeX && x <= obstacles.get(i).getX() + obstacles.get(i).getWidth()) {
+					//System.out.println("below"); 
+					canMove[2] = false;
 				}
 
-				else if (self.getDown() && self.getY() + self.getSizeY() <= obstacles.get(i).getY() && self.getX() > obstacles.get(i).getX() - obstacles.get(i).getWidth() && self.getX() < obstacles.get(i).getX() + obstacles.get(i).getWidth()) {
-					System.out.println("above"); 
-					canDown = false;
-					canUp = true;
+				else if(self.getUp() && y <= obstacles.get(i).getY() + obstacles.get(i).getHeight() && x >= obstacles.get(i).getX() - sizeX && x <= obstacles.get(i).getX() + obstacles.get(i).getWidth()) {
+					//System.out.println("above");
+					canMove[3] = false;
 				}
-				
 			}
-			
 		}
-		//System.out.println("nothing");
 
+		return canMove;
 	}
 	public boolean getCanUp() {
 		return canUp;
