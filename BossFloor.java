@@ -1,5 +1,3 @@
-package desperado;
-
 @SuppressWarnings("serial")
 public class BossFloor extends Level{
 	private static int leftBound = 0, rightBound = 6000, upBound = 0, downBound = 4100;
@@ -8,7 +6,7 @@ public class BossFloor extends Level{
 	private static int[][] enemyXY;
 	
 	public BossFloor(int playerX, int playerY, int vx, int vy, String mapPath, String gridPath, int gridColumns, int gridRows) throws InterruptedException {
-		super(playerX, playerY, vx, vy, mapPath, gridPath, gridColumns, gridRows, leftBound, rightBound, upBound, downBound, width, height, tileSize, enemyXY);
+		super(playerX, playerY, vx, vy, mapPath, gridPath, gridColumns, gridRows, leftBound, rightBound, upBound, downBound, width, height, tileSize, enemyXY, true);
 
 	}
 	

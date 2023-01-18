@@ -1,5 +1,3 @@
-package desperado;
-
 public class Slime extends Entity{
 	private static final String SLIME_IDLE = "slime_idle_spritesheet.png";
 	private static final String SLIME_RUN = "slime_run_spritesheet.png";

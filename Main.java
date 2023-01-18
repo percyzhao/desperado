@@ -1,4 +1,3 @@
-package desperado;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
@@ -35,9 +34,9 @@ public class Main {
 
 		//c.add(panel);
 		//c.add(panel2);
-		//c.add(introFloor);
-		//c.add(floorOne);
-		//c.add(floorTwo);
+		c.add(introFloor);
+		c.add(floorOne);
+		c.add(floorTwo);
 		c.add(bossFloor);
 		
 		f.setExtendedState(JFrame.MAXIMIZED_BOTH);	

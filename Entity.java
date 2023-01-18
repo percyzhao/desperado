@@ -1,14 +1,17 @@
-package desperado;
 import java.awt.AlphaComposite;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.MouseInfo;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+
 import javax.imageio.ImageIO;
 
 public class Entity{
@@ -24,6 +27,7 @@ public class Entity{
 	private int sizeX, sizeY;
 	private boolean dmg;
 
+	private Image rock;
 	private boolean right, left, up, down, stay;
 	private int hp;
 	private boolean takenDmg;
@@ -33,6 +37,7 @@ public class Entity{
 	private BufferedImage sword, bow;
 	private boolean bow2 = false, drawBow = true;
 	private Graphics2D g;
+	private Rectangle hitbox;
 
 
 
@@ -175,10 +180,6 @@ public class Entity{
 		up = false;
 		down = false;
 	}
-	
-	public void setHP(int hp) {
-		this.hp = hp;
-	}
 
 	public void setX(int x) {
 		this.x = x;
@@ -225,14 +226,30 @@ public class Entity{
 
 
 	public void move(boolean canRight, boolean canLeft, boolean canUp, boolean canDown) {
-
-		if(right && canRight)
+		if(right && up && canRight && canUp) {
 			x += xVelocity;
-		if(left && canLeft)
-			x -= xVelocity;
-		if(up && canUp)
 			y -= yVelocity;
-		if(down && canDown)
+		}
+		else if(right && down && canRight && canDown) {
+			x += xVelocity;
+			y += yVelocity;
+		}
+		
+		else if(left && up && canLeft && canUp) {
+			x -= xVelocity;
+			y -= yVelocity;
+		}
+		else if(left && down && canLeft && canDown) {
+			x -= xVelocity;
+			y += yVelocity;
+		}
+		else if(right && canRight)
+			x += xVelocity;
+		else if(left && canLeft)
+			x -= xVelocity;
+		else if(up && canUp)
+			y -= yVelocity;
+		else if(down && canDown)
 			y += xVelocity;
 
 	}
@@ -244,7 +261,9 @@ public class Entity{
 			dmg = true;
 			iFrames = 0;
 			takenDmg = true;
+			hp --;
 		}
+		
 
 	}
 
@@ -265,7 +284,9 @@ public class Entity{
 		}
 
 		Image scaledImage = entityImg.getScaledInstance(sizeX, sizeY, Image.SCALE_DEFAULT);
-
+		
+		if(hp == 0)
+			dead();
 		if(takenDmg) {
 			if(iFrames % 2==0)
 				((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) 0.5));
@@ -277,7 +298,25 @@ public class Entity{
 
 		if(alive) {
 			g.drawImage(scaledImage, x, y, null);
+			
+			//again 64 is tile size its not hard coding our game is just 64 x 64
 			g.drawRect(x, y, sizeX, sizeY);
+
+			
+			//top
+			g.drawRect(x + sizeX/3, y + sizeY/6 - ((sizeX - 64)/2), (int)(64/1.5), ((sizeX - 64)/2));
+			
+			//bottom
+			g.drawRect(x + sizeX/3, y + sizeY/6 +64, (int) (64/1.5), ((sizeX - 64)/2));
+			
+			//left
+			g.drawRect(x + sizeX/5- ((sizeX - 64)/2),y + sizeY/4, ((sizeX - 64)/2), (int) (64/1.5));
+			
+			//right
+			g.drawRect(x + sizeX/5+64,y + sizeY/4, ((sizeX - 64)/2), (int) (64/1.5));
+			
+			hitbox = new Rectangle(x + sizeX/5, y + sizeY/6, 64, 64);
+			g.drawRect(x + sizeX/5, y + sizeY/6, 64, 64);
 
 		}
 
@@ -308,7 +347,7 @@ public class Entity{
 				int drawLocationX = x + sizeX;
 				int drawLocationY = y - 10;
 
-				// Rotation information
+				// Rotation informati
 
 				double rotationRequired = Math.toRadians (MouseInfo.getPointerInfo().getLocation().getY()/3);
 				double locationX = bow.getWidth() / 2;
@@ -334,6 +373,9 @@ public class Entity{
 
 
 
+	}
+	public Rectangle getHitbox() {
+		return hitbox;
 	}
 
 

@@ -1,4 +1,3 @@
-package desperado;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.awt.*;
@@ -47,7 +46,7 @@ public class Level extends JPanel implements KeyListener, ActionListener, MouseL
 		return panelHeight;
 	}
 
-	public Level(int playerX, int playerY, int vx, int vy, String mapPath, String gridPath, int gridColumns, int gridRows, int leftBound, int rightBound, int upBound, int downBound, int width, int height, int tileSize, int[][] enemyXY) throws InterruptedException {
+	public Level(int playerX, int playerY, int vx, int vy, String mapPath, String gridPath, int gridColumns, int gridRows, int leftBound, int rightBound, int upBound, int downBound, int width, int height, int tileSize, int[][] enemyXY, boolean boss) throws InterruptedException {
 
 		this.leftBound = leftBound;
 		this.rightBound = rightBound;
@@ -73,7 +72,7 @@ public class Level extends JPanel implements KeyListener, ActionListener, MouseL
 
 		this.addMouseListener(this);
 
-		camera = new Camera();
+		camera = new Camera(boss);
 
 		BufferedImage bufferedImage = null;
 		try {
@@ -231,23 +230,19 @@ public class Level extends JPanel implements KeyListener, ActionListener, MouseL
 	public void keyPressed(KeyEvent e) {
 		if(!Camera.cutscene) {
 			if (e.getKeyCode() == KeyEvent.VK_W) {
-				if(collision.getCanUp())
-					player.setUp();
+				player.setUp();
 			}
 
 			else if (e.getKeyCode() == KeyEvent.VK_S) {
-				if(collision.getCanDown())
-					player.setDown();
+				player.setDown();
 			} 
 
 			else if (e.getKeyCode() == KeyEvent.VK_A) {
-				if(collision.getCanLeft())
-					player.setLeft();
+				player.setLeft();
 			} 
 
 			else if (e.getKeyCode() == KeyEvent.VK_D) {
-				if(collision.getCanRight())
-					player.setRight();
+				player.setRight();
 			}
 			else if(e.getKeyCode() == KeyEvent.VK_SPACE) {
 				if(player.getBow()) {
@@ -293,21 +288,25 @@ public class Level extends JPanel implements KeyListener, ActionListener, MouseL
 
 
 
-		/*
 		for(int i = 0; i < enemies.size(); i++) {
-			if(!.collideDirection(enemies.get(i), player).equals("not") && enemies.get(i).getAlive()) {
-				player.dmg();
-			}
-			if(player.getHp() == 0) {
-				timer.stop();
-			}
-			Entity sword = new Entity(player.getX() + player.getSizeX() + player.getCount2()*2, player.getY() , 0, 0, "knight_idle_spritesheet.png", "knight_idle_spritesheet.png",  100, 100, 0);
-			if(sword.collideDirection(sword, enemies.get(i)) != "not") {
-				enemies.get(i).dead();
-			}
-			enemies.get(i).move();
-		}
-		 */
+            if(collision.collideEnemy(player, enemies.get(i)) && enemies.get(i).getAlive()) {
+                player.dmg();
+            }
+            if(player.getHp() == 0) {
+                timer.stop();
+            }
+            Entity sword = new Entity(player.getX() + player.getSizeX() + player.getattackTime()*2, player.getY() , 0, 0, "knight_idle_spritesheet.png", "knight_idle_spritesheet.png",  100, 100, 0);
+            
+            if(collision.collideEnemy(sword, enemies.get(i))) {
+                enemies.get(i).dead();
+            }
+            boolean[] canMove = collision.collideDirection(player);
+            enemies.get(i).move(canMove[0],canMove[1],canMove[2],canMove[3]);
+        }
+        
+        
+
+
 
 
 

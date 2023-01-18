@@ -1,17 +1,18 @@
-package desperado;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
 
 public class Camera {
+	private boolean boss = false;
 	private int camX, camY;
 	public static boolean cutscene = false;
 	public static boolean hasHappened = false;
 
 
 
-	public Camera() {
-
+	
+	public Camera(boolean n) {
+		boss = n;
 	}
 
 	public int getCamX() {
@@ -45,7 +46,7 @@ public class Camera {
 		} 	
 
 		if(!hasHappened) {
-			if (playerX >= 2000 && playerX <= 2140 && playerY >= 2170 && playerY <= 2260) {
+			if (playerX >= 2000 && playerX <= 2140 && playerY >= 2170 && playerY <= 2260 && boss) {
 				cutscene = true;
 				hasHappened = true;
 			}
