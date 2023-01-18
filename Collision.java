@@ -3,7 +3,7 @@ import java.util.ArrayList;
 
 public class Collision {
 	private ArrayList<Rectangle> obstacles = new ArrayList<Rectangle>();
-	public boolean canRight = true, canLeft = true, canUp =true, canDown = true;
+
 	
 	public void loadCollisionMap(int[][] map) {
 		obstacles.clear();
@@ -28,18 +28,22 @@ public class Collision {
 		Rectangle real = new Rectangle(other.getX(), other.getY(), 80, 80);
 		if(!takenDmg) {
 			if(selfHit.intersects(entity)) {
+
 				if(x + 60 + xVelocity < other.getX() - xVelocity && y + yVelocity > other.getY() - yVelocity - 70 && y + yVelocity  + 100 < other.getY() - yVelocity + 190) {
 					//System.out.println("left");
 					return "left";
+
 				}
 				else if(x + xVelocity + 60 > other.getX() - xVelocity + 100 && y + yVelocity > other.getY() - yVelocity - 70 && y + yVelocity < other.getY() - yVelocity + 90) {
 					//System.out.println("right");
 					return "right";
 				}
+
 				else if(y + yVelocity + 60 > other.getY() - yVelocity + 100 && x + xVelocity > other.getX() - xVelocity - 70 && x + xVelocity < other.getX() - xVelocity + 90) {
 					//System.out.println("below");
 					return "below";
 				}
+
 				else if(y + yVelocity + 60 < other.getY() - yVelocity && x + xVelocity > other.getX() - xVelocity - 70 && x + xVelocity + 100 < other.getX() - xVelocity + 190) {
 					//System.out.println("above");
 					return "above";
@@ -52,62 +56,177 @@ public class Collision {
 		return "not";	
 	}
 	*/
+
 	
-	public void collideDirection(Entity self) {
-		Rectangle hitbox = new Rectangle(self.getX(), self.getY(), self.getSizeX(),  self.getSizeY());
+	public boolean[] collideDirection(Entity self) {
+		boolean[] canMove = {true, true, true, true};
+		int x = self.getX();
+		int y = self.getY();
+		int sizeX = self.getSizeX();
+		int sizeY = self.getSizeY();
+		int xVelocity = self.getXVelocity();
+		int yVelocity = self.getYVelocity();
+		Rectangle selfRect = new Rectangle(x, y, sizeX, sizeY);
 		
 		for(int i = 0; i < obstacles.size(); i ++) {
-			if(hitbox.intersects(obstacles.get(i))) {
-				System.out.println("bruh");
-				canRight = false;
-				canLeft = false;
-				canUp = false;
-				canDown = false;
+			
+			if(selfRect.intersects(obstacles.get(i))) {
+				Rectangle rightHitbox = new Rectangle(x + sizeX/5+64,y + sizeY/6, ((sizeX - 64)/2), 64);
+				Rectangle leftHitbox = new Rectangle(x + sizeX/5- ((sizeX - 64)/2),y + sizeY/6, ((sizeX - 64)/2), 64);
+				Rectangle topHitbox = new Rectangle(x + sizeX/5, y + sizeY/6 - ((sizeX - 64)/2), 64, ((sizeX - 64)/2));
+				Rectangle bottomHitbox = new Rectangle(x + sizeX/5, y + sizeY/6 +64, 64, ((sizeX - 64)/2));
 				
-				if (self.getRight() && self.getX() + self.getSizeX() <= obstacles.get(i).getX() && self.getY() > obstacles.get(i).getY() - self.getSizeY() && self.getY() < obstacles.get(i).getY() + obstacles.get(i).getHeight()) {
-					
-					System.out.println("left");
-					canLeft = false;
-					canRight = true;
+				if(self.getRight() && obstacles.get(i).intersects(rightHitbox)) {
+					System.out.println("collide left");
+					canMove[0] = false;
 				}
-				else if (self.getLeft() && self.getX() >= obstacles.get(i).getX() + obstacles.get(i).getWidth() && self.getY() > obstacles.get(i).getY() - self.getSizeY() && self.getY() < obstacles.get(i).getY() + obstacles.get(i).getHeight()) {
-					System.out.println("right");
-					canRight = false;
-					canLeft = true;
+				if(self.getLeft() && obstacles.get(i).intersects(leftHitbox)) {
+					System.out.println("collide right");
+					canMove[1] = false;
 				}
-
-				else if (self.getUp() && self.getY()>= obstacles.get(i).getY() + obstacles.get(i).getHeight() && self.getX() > obstacles.get(i).getX() - obstacles.get(i).getWidth() && self.getX() < obstacles.get(i).getX() + obstacles.get(i).getWidth()) {
-					System.out.println("below"); 
-					canUp = false;
-					canDown = true;
+				if(self.getUp() && obstacles.get(i).intersects(topHitbox)) {
+					System.out.println("collide bottom");
+					canMove[2] = false;
 				}
-
-				else if (self.getDown() && self.getY() + self.getSizeY() <= obstacles.get(i).getY() && self.getX() > obstacles.get(i).getX() - obstacles.get(i).getWidth() && self.getX() < obstacles.get(i).getX() + obstacles.get(i).getWidth()) {
-					System.out.println("above"); 
-					canDown = false;
-					canUp = true;
+				if(self.getDown() && obstacles.get(i).intersects(bottomHitbox)) {
+					System.out.println("collide top");
+					canMove[3] = false;
 				}
+			}
+		}
+		return canMove;
+		/*
+		//top
+		g.drawRect(x + sizeX/5, y + sizeY/6 - ((sizeX - 64)/2), 64, ((sizeX - 64)/2));
+			
+		//bottom
+		g.drawRect(x + sizeX/5, y + sizeY/6 +64, 64, ((sizeX - 64)/2));
+			
+		//left
+		g.drawRect(x + sizeX/5- ((sizeX - 64)/2),y + sizeY/6, ((sizeX - 64)/2), 64);
+			
+		//right
+		g.drawRect(x + sizeX/5+64,y + sizeY/6, ((sizeX - 64)/2), 64);
+		*/
+	}
+	
+	
+	
+	public boolean canRight(Entity self) {
+		int x = self.getX();
+		int y = self.getY();
+		int sizeX = self.getSizeX();
+		int sizeY = self.getSizeY();
+		int xVelocity = self.getXVelocity();
+		
+		
+		Rectangle selfRect = new Rectangle(x, y, sizeX, sizeY);
+		for(int i = 0; i < obstacles.size(); i ++) {
+			int obX = (int) obstacles.get(i).getX();
+			int obY = (int) obstacles.get(i).getY();
+			int obHeight = (int) obstacles.get(i).getHeight();
+			
+			if(selfRect.intersects(obstacles.get(i)) && self.getRight()) {
+				System.out.println("collide left");
+				if(x + sizeX - xVelocity <= obX && y >= obY - sizeY + xVelocity && y <= obY + obHeight) {
+					System.out.println("collide left");
+					return false;
+				}
+				
 				
 			}
 			
 		}
-		//System.out.println("nothing");
-
+		return true;
+		
 	}
-	public boolean getCanUp() {
-		return canUp;
+	
+	public boolean canLeft(Entity self) {
+		
+		int x = self.getX();
+		int y = self.getY();
+		int sizeX = self.getSizeX();
+		int sizeY = self.getSizeY();
+		int xVelocity = self.getXVelocity();
+		
+		
+		Rectangle selfRect = new Rectangle(x, y, sizeX, sizeY);
+		for(int i = 0; i < obstacles.size(); i ++) {
+			int obX = (int) obstacles.get(i).getX();
+			int obY = (int) obstacles.get(i).getY();
+			int obWidth = (int) obstacles.get(i).getWidth();
+			int obHeight = (int) obstacles.get(i).getHeight();
+			
+			if(selfRect.intersects(obstacles.get(i)) && self.getLeft()) {
+				System.out.println("collide right");
+				if(x >= obX + obWidth - xVelocity && y >= obY - sizeY + xVelocity && y <= obY + obHeight)
+					System.out.println("collide right");
+					return false;
+				
+				
+			}
+			
+		}
+		return true;
+		
 	}
-
-	public boolean getCanDown() {
-		return canDown;
+	public boolean canUp(Entity self) {
+		
+		int x = self.getX();
+		int y = self.getY();
+		int sizeX = self.getSizeX();
+		int sizeY = self.getSizeY();
+		int xVelocity = self.getXVelocity();
+		int yVelocity = self.getYVelocity();
+		
+		Rectangle selfRect = new Rectangle(x, y, sizeX, sizeY);
+		for(int i = 0; i < obstacles.size(); i ++) {
+			int obX = (int) obstacles.get(i).getX();
+			int obY = (int) obstacles.get(i).getY();
+			int obWidth = (int) obstacles.get(i).getWidth();
+			int obHeight = (int) obstacles.get(i).getHeight();
+			
+			if(selfRect.intersects(obstacles.get(i)) && self.getUp()) {
+				System.out.println("collide below");
+				if(y >= obY + obHeight - yVelocity && x >= obY - sizeX + xVelocity && y <= obX + obWidth)
+					System.out.println("collide below");
+					return false;
+				
+				
+			}
+			
+		}
+		return true;
+		
 	}
+	public boolean canDown(Entity self) {
+		
+		int x = self.getX();
+		int y = self.getY();
+		int sizeX = self.getSizeX();
+		int sizeY = self.getSizeY();
+		int xVelocity = self.getXVelocity();
+		int yVelocity = self.getYVelocity();
+		
+		Rectangle selfRect = new Rectangle(x, y, sizeX, sizeY);
+		for(int i = 0; i < obstacles.size(); i ++) {
+			int obX = (int) obstacles.get(i).getX();
+			int obY = (int) obstacles.get(i).getY();
+			int obWidth = (int) obstacles.get(i).getWidth();
 
-	public boolean getCanRight() {
-		return canRight;
+			
+			if(selfRect.intersects(obstacles.get(i)) && self.getDown()) {
+				System.out.println("collide above");
+				if(y + sizeY - yVelocity <= obY && x >= obY - sizeX + xVelocity && y <= obX + obWidth)
+					System.out.println("collide above");
+					return false;
+			
+				
+			}
+			
+		}
+		return true;
+		
 	}
-
-	public boolean getCanLeft() {
-		return canLeft;
-	}
-
+	
 }

@@ -83,10 +83,10 @@ public class Level extends JPanel implements KeyListener, ActionListener, MouseL
 		} 
 		
 		map = bufferedImage.getScaledInstance(width*scale, height*scale, Image.SCALE_DEFAULT);
-		//for(int i = 0; i < numEnemies; i++) {
-			//Slime slime = new Slime(2200, 1000 - i * 100, 10, 10);
-			//enemies.add(slime);
-		//}
+		for(int i = 0; i < numEnemies; i++) {
+			Slime slime = new Slime(2200, 1000 - i * 100, 10, 10);
+			enemies.add(slime);
+		}
 		
 		
 	}
@@ -121,15 +121,14 @@ public class Level extends JPanel implements KeyListener, ActionListener, MouseL
 		
 	
 		player.myDraw(g);
-		
-		levelChange();
-		
-		player.myDraw(g);
+				
 		collision.loadCollisionMap(collisionMap);
-
+		
+		
 		for(int i = 0; i < collision.getMap().size(); i++) {
 			g.drawRect((int)collision.getMap().get(i).getX(), (int)collision.getMap().get(i).getY(), 64, 64);
 		}
+		
 		
 		for(int i = 0; i < enemies.size(); i++) {
 			enemies.get(i).myDraw(g);
@@ -175,23 +174,19 @@ public class Level extends JPanel implements KeyListener, ActionListener, MouseL
 	public void keyPressed(KeyEvent e) {
 
 		if (e.getKeyCode() == KeyEvent.VK_W) {
-			if(collision.getCanUp())
-				player.setUp();
+			player.setUp();
 		}
 
 		else if (e.getKeyCode() == KeyEvent.VK_S) {
-			if(collision.getCanDown())
-				player.setDown();
+			player.setDown();
 		} 
 
 		else if (e.getKeyCode() == KeyEvent.VK_A) {
-			if(collision.getCanLeft())
-				player.setLeft();
+			player.setLeft();
 		} 
 
 		else if (e.getKeyCode() == KeyEvent.VK_D) {
-			if(collision.getCanRight())
-				player.setRight();
+			player.setRight();
 		}
 		else if(e.getKeyCode() == KeyEvent.VK_SPACE) {
 			if(player.getBow()) {
@@ -235,7 +230,7 @@ public class Level extends JPanel implements KeyListener, ActionListener, MouseL
 
 
 		count ++;
-		/*
+		
 		for(int i = 0; i < enemies.size(); i++) {
 			if(count == 20) {
 				enemies.get(i).setStay();
@@ -258,11 +253,11 @@ public class Level extends JPanel implements KeyListener, ActionListener, MouseL
 				count = 0;
 			}
 		}
-		*/
+		
 		
 		/*
 		for(int i = 0; i < enemies.size(); i++) {
-			if(!.collideDirection(enemies.get(i), player).equals("not") && enemies.get(i).getAlive()) {
+			if(!collision.collideDirection(enemies.get(i), player).equals("not") && enemies.get(i).getAlive()) {
 				player.dmg();
 			}
 			if(player.getHp() == 0) {
@@ -274,12 +269,13 @@ public class Level extends JPanel implements KeyListener, ActionListener, MouseL
 			}
 			enemies.get(i).move();
 		}
-		*/
 		
+		*/
 
 
-		collision.collideDirection(player);
-		player.move(collision.getCanRight(),collision.getCanLeft(),collision.getCanUp(),collision.getCanDown());
+		boolean[] canMove = collision.collideDirection(player);
+		
+		player.move(canMove[0],canMove[1],canMove[2],canMove[3]);
 		repaint();
 
 	}

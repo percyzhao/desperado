@@ -1,4 +1,3 @@
-
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
@@ -21,7 +20,7 @@ public class Camera {
 
         camX = playerX + playerWidth/2 - Level.getPanelWidth()/2;
         camY = playerY + playerHeight/2 - Level.getPanelHeight()/2;
-        
+
         if(camX <= leftBound) {
             camX = leftBound;
         }
