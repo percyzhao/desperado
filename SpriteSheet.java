@@ -1,4 +1,10 @@
-
+/*
+Author: Percy Zhao, Haodong Wang
+Date:  Jan 18 2022
+Class Code: ICS3U7-1
+Teacher: H. Strelkovska
+Program: Our class that loads spritehseets into images.
+*/
 
 import java.awt.image.*;
 import java.io.*;
@@ -15,6 +21,7 @@ public class SpriteSheet {
 		this.tileSize = tileSize;
 	}
 	
+	// loading the spritesheet
 	public void loadImages(String file) {
 		
 		BufferedImage sheet = null;
@@ -31,6 +38,7 @@ public class SpriteSheet {
 		
 	}
 		
+	// getting the next image in the spritesheet
 	public BufferedImage nextSprite() {
 		
 		rightCount++;

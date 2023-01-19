@@ -1,3 +1,10 @@
+/*
+Author: Percy Zhao, Haodong Wang
+Date:  Jan 18 2022
+Class Code: ICS3U7-1
+Teacher: H. Strelkovska
+Program: Entity class for our game, letting entities move, attack, etc.
+*/
 import java.awt.AlphaComposite;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -37,6 +44,7 @@ public class Entity{
 	private BufferedImage sword, bow;
 	private boolean bow2 = false, drawBow = true;
 	private Graphics2D g;
+	private boolean heartShift = false;
 
 
 
@@ -61,14 +69,14 @@ public class Entity{
 		rightSheet.loadImages(runFile);
 
 
-
+		// loading images
 		try {
 			sword = ImageIO.read(new File("weapon_sword_2.png"));
 		} 
 		catch (Exception e) {
 
 		} 
-
+		
 		BufferedImage dimg = new BufferedImage(100, 100, sword.getType());  
 		g = dimg.createGraphics();  
 		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);  
@@ -101,7 +109,10 @@ public class Entity{
 
 
 
-	//getters
+	//getters and setters
+	public boolean getHeartShift() {
+		return heartShift;
+	}
 	public int getX() {
 		return x;
 	}
@@ -225,27 +236,55 @@ public class Entity{
 
 
 	public void move(boolean canRight, boolean canLeft, boolean canUp, boolean canDown) {
-
-		if(right && canRight)
+		
+		// changes position depending on what can be moved
+		if(right && up && canRight && canUp) {
 			x += xVelocity;
-		if(left && canLeft)
-			x -= xVelocity;
-		if(up && canUp)
 			y -= yVelocity;
-		if(down && canDown)
+		}
+		else if(right && down && canRight && canDown) {
+			x += xVelocity;
+			y += yVelocity;
+		}
+		
+		else if(left && up && canLeft && canUp) {
+			x -= xVelocity;
+			y -= yVelocity;
+		}
+		else if(left && down && canLeft && canDown) {
+			x -= xVelocity;
+			y += yVelocity;
+		}
+		else if(right && canRight)
+			x += xVelocity;
+		else if(left && canLeft)
+			x -= xVelocity;
+		else if(up && canUp)
+			y -= yVelocity;
+		else if(down && canDown)
 			y += xVelocity;
 
 	}
 
 	public void dmg() {
-		if(takenDmg)
+		
+		if(takenDmg) {
 			dmg = false;
+		}
 		else {
 			dmg = true;
 			iFrames = 0;
 			takenDmg = true;
+			hp --;
+			
+			
 		}
+		
+		
 
+	}
+	public boolean getDmg() {
+		return dmg;
 	}
 
 	public int getattackTime() {
@@ -253,9 +292,12 @@ public class Entity{
 	}
 	public void dead() {
 		alive = false;
+		
 	}
+	// the main draw function for each entity
 	public void myDraw(Graphics g) {
 		//Idle
+		((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) 1));
 		if (stay) {
 			entityImg = idleSheet.nextSprite();			
 		}
@@ -265,7 +307,10 @@ public class Entity{
 		}
 
 		Image scaledImage = entityImg.getScaledInstance(sizeX, sizeY, Image.SCALE_DEFAULT);
-
+		
+		// only draws them if theyre alive
+		if(hp == 0)
+			dead();
 		if(takenDmg) {
 			if(iFrames % 2==0)
 				((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) 0.5));
@@ -277,10 +322,36 @@ public class Entity{
 
 		if(alive) {
 			g.drawImage(scaledImage, x, y, null);
+			
+			// hitboxes if you want to see them
+			/*
+			g.drawRect(x-750/2, y-750/2, 750, 750);
+			
+			
+			
+			
+			// again 64 is tile size its not hard coding our game is just 64 x 64
 			g.drawRect(x, y, sizeX, sizeY);
-
+	
+			// top
+			g.drawRect(x + sizeX / 3, y + sizeY / 6 - ((sizeX - 64) / 2), (int) (64 / 1.5), ((sizeX - 64) / 2));
+	
+			// bottom
+			g.drawRect(x + sizeX / 3, y + sizeY / 6 + 64, (int) (64 / 1.5), ((sizeX - 64) / 2));
+	
+			// left
+			g.drawRect(x + sizeX / 5 - ((sizeX - 64) / 2), y + sizeY / 4, ((sizeX - 64) / 2), (int) (64 / 1.5));
+	
+			// right
+			g.drawRect(x + sizeX / 5 + 64, y + sizeY / 4, ((sizeX - 64) / 2), (int) (64 / 1.5));
+	
+			g.drawRect(x + sizeX / 5, y + sizeY / 6, 64, 64);
+			*/
+			
 		}
 
+		
+		// drawing attacks
 		if(attack){
 			if(!bow2) {
 				// The required drawing location
@@ -326,6 +397,7 @@ public class Entity{
 
 
 		iFrames++;
+	
 		attackTime += 20;
 		if (iFrames == 20 && takenDmg) {
 			takenDmg = false;
@@ -335,6 +407,7 @@ public class Entity{
 
 
 	}
+	
 
 
 }
