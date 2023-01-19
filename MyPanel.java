@@ -1,3 +1,10 @@
+/*
+Author: Percy Zhao, Haodong Wang
+Date:  Jan 18 2022
+Class Code: ICS3U7-1
+Teacher: H. Strelkovska
+Program: Our title screen
+*/
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
@@ -14,6 +21,7 @@ public class MyPanel extends JPanel implements ActionListener, MouseListener{
 	
 	public MyPanel() {
 		
+		// adding buttons
 		
 		start = new JButton("Start");
 		
@@ -63,7 +71,7 @@ public class MyPanel extends JPanel implements ActionListener, MouseListener{
 	public void paint(Graphics g){
 
 		
-
+		// drawing title image
 		BufferedImage bufferedImage = null;
 		try {
 			bufferedImage = ImageIO.read(new File("title_screen.png"));
